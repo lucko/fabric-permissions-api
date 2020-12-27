@@ -2,11 +2,12 @@
 
 A simple permissions API for Fabric.
 
-### Usage (end users)
+### Usage (modders)
 
-All the methods you need are in the `Permissions` class.
+All the methods you need to check for permissions in a mod live in the `Permissions` class.
 
-#### Checking permissions for a `ServerPlayerEntity`
+#### Checking permissions for an `Entity`
+This of course includes all subtypes, most notably `ServerPlayerEntity`.
 
 ```java
 ServerPlayerEntity player = ...;
@@ -36,13 +37,13 @@ CommandManager.literal("test")
     .build();
 ```
 
-### Usage (implementors)
+### Usage (permission provider mods)
 
 Just register a callback for the `PermissionCheckEvent`.
 
 ```java
-PermissionCheckEvent.EVENT.register((player, permission) -> {
-    if (player.getName().equals("Luck")) {
+PermissionCheckEvent.EVENT.register((source, permission) -> {
+    if (isSuperAdmin(source)) {
         return TriState.TRUE;
     }
     return TriState.DEFAULT;
