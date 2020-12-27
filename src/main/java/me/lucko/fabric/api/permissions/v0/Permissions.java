@@ -27,11 +27,12 @@ public interface Permissions {
     }
 
     /**
-     * Performs a permission check.
+     * Performs a permission check, falling back to the {@code defaultValue} if the resultant
+     * state is {@link TriState#DEFAULT}.
      *
      * @param source the source to perform the check for
      * @param permission the permission to check
-     * @param defaultValue the default value to use for the permission, if nothing has been set.
+     * @param defaultValue the default value to use if nothing has been set
      * @return the result of the permission check
      */
     static boolean check(CommandSource source, String permission, boolean defaultValue) {
@@ -39,32 +40,61 @@ public interface Permissions {
     }
 
     /**
-     * Performs a permission check.
+     * Performs a permission check, falling back to requiring the {@code defaultRequiredLevel}
+     * if the resultant state is {@link TriState#DEFAULT}.
+     *
+     * @param source the source to perform the check for
+     * @param permission the permission to check
+     * @param defaultRequiredLevel the required permission level to check for as a fallback
+     * @return the result of the permission check
+     */
+    static boolean check(CommandSource source, String permission, int defaultRequiredLevel) {
+        return getPermissionValue(source, permission).orElseGet(() -> source.hasPermissionLevel(defaultRequiredLevel));
+    }
+
+    /**
+     * Performs a permission check, falling back to {@code false} if the resultant state
+     * is {@link TriState#DEFAULT}.
      *
      * @param source the source to perform the check for
      * @param permission the permission to check
      * @return the result of the permission check
      */
     static boolean check(CommandSource source, String permission) {
-        return check(source, permission, false);
+        return getPermissionValue(source, permission).orElse(false);
     }
 
     /**
-     * Creates a predicate which returns the result of performing a permission check.
+     * Creates a predicate which returns the result of performing a permission check,
+     * falling back to the {@code defaultValue} if the resultant state is {@link TriState#DEFAULT}.
      *
      * @param permission the permission to check
-     * @param defaultValue the default value to use for the permission, if nothing has been set.
-     * @return the a predicate representing the permission check
+     * @param defaultValue the default value to use if nothing has been set
+     * @return a predicate that will perform the permission check
      */
     static Predicate<ServerCommandSource> require(String permission, boolean defaultValue) {
         return player -> check(player, permission, defaultValue);
     }
 
     /**
-     * Creates a predicate which returns the result of performing a permission check.
+     * Creates a predicate which returns the result of performing a permission check,
+     * falling back to requiring the {@code defaultRequiredLevel} if the resultant state is
+     * {@link TriState#DEFAULT}.
      *
      * @param permission the permission to check
-     * @return the a predicate representing the permission check
+     * @param defaultRequiredLevel the required permission level to check for as a fallback
+     * @return a predicate that will perform the permission check
+     */
+    static Predicate<ServerCommandSource> require(String permission, int defaultRequiredLevel) {
+        return player -> check(player, permission, defaultRequiredLevel);
+    }
+
+    /**
+     * Creates a predicate which returns the result of performing a permission check,
+     * falling back to {@code false} if the resultant state is {@link TriState#DEFAULT}.
+     *
+     * @param permission the permission to check
+     * @return a predicate that will perform the permission check
      */
     static Predicate<ServerCommandSource> require(String permission) {
         return player -> check(player, permission);
@@ -84,11 +114,12 @@ public interface Permissions {
     }
 
     /**
-     * Performs a permission check.
+     * Performs a permission check, falling back to the {@code defaultValue} if the resultant
+     * state is {@link TriState#DEFAULT}.
      *
      * @param entity the entity to perform the check for
      * @param permission the permission to check
-     * @param defaultValue the default value to use for the permission, if nothing has been set.
+     * @param defaultValue the default value to use if nothing has been set
      * @return the result of the permission check
      */
     static boolean check(Entity entity, String permission, boolean defaultValue) {
@@ -96,14 +127,28 @@ public interface Permissions {
     }
 
     /**
-     * Performs a permission check.
+     * Performs a permission check, falling back to requiring the {@code defaultRequiredLevel}
+     * if the resultant state is {@link TriState#DEFAULT}.
      *
-     * @param entity the source to perform the check for
+     * @param entity the entity to perform the check for
+     * @param permission the permission to check
+     * @param defaultRequiredLevel the required permission level to check for as a fallback
+     * @return the result of the permission check
+     */
+    static boolean check(Entity entity, String permission, int defaultRequiredLevel) {
+        return getPermissionValue(entity, permission).orElseGet(() -> entity.hasPermissionLevel(defaultRequiredLevel));
+    }
+
+    /**
+     * Performs a permission check, falling back to {@code false} if the resultant state
+     * is {@link TriState#DEFAULT}.
+     *
+     * @param entity the entity to perform the check for
      * @param permission the permission to check
      * @return the result of the permission check
      */
     static boolean check(Entity entity, String permission) {
-        return check(entity, permission, false);
+        return getPermissionValue(entity, permission).orElse(false);
     }
 
 }
