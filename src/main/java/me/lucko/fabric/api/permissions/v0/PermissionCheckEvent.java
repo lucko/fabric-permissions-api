@@ -28,6 +28,7 @@ package me.lucko.fabric.api.permissions.v0;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
@@ -35,9 +36,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
  */
 public interface PermissionCheckEvent {
 
-    Event<PermissionCheckEvent> EVENT = EventFactory.createArrayBacked(PermissionCheckEvent.class, (callbacks) -> (player, permission) -> {
+    Event<PermissionCheckEvent> EVENT = EventFactory.createArrayBacked(PermissionCheckEvent.class, (callbacks) -> (source, permission) -> {
         for (PermissionCheckEvent callback : callbacks) {
-            TriState res = callback.onPermissionCheck(player, permission);
+            TriState res = callback.onPermissionCheck(source, permission);
             if (res != TriState.DEFAULT) {
                 return res;
             }
@@ -45,6 +46,6 @@ public interface PermissionCheckEvent {
         return TriState.DEFAULT;
     });
 
-    TriState onPermissionCheck(ServerPlayerEntity player, String permission);
+    TriState onPermissionCheck(CommandSource source, String permission);
 
 }
