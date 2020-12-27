@@ -1,0 +1,74 @@
+plugins {
+    id 'fabric-loom' version '0.5-SNAPSHOT'
+    id 'maven-publish'
+}
+
+repositories {
+    maven { url 'https://maven.fabricmc.net/' }
+}
+
+def minecraftVersion = '1.16.4'
+def yarnBuild = 7
+def loaderVersion = '0.10.8'
+def fabricApiVersion = '0.28.4+1.16'
+
+group = 'me.lucko'
+version = '1.0-SNAPSHOT'
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraftVersion}"
+    mappings "net.fabricmc:yarn:${minecraftVersion}+build.${yarnBuild}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
+
+    Set<String> apiModules = [
+            'fabric-api-base'
+    ]
+
+    apiModules.forEach {
+        modImplementation(include(fabricApi.module(it, fabricApiVersion)))
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "fabric.mod.json"
+        expand "version": project.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "fabric.mod.json"
+    }
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+jar {
+    from "LICENSE.txt"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
+
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+        }
+    }
+}
