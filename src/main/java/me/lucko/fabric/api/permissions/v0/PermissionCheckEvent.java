@@ -29,23 +29,24 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.command.CommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Simple permissions check event for {@link ServerPlayerEntity server players}.
+ * Simple permissions check event for {@link CommandSource}s.
  */
 public interface PermissionCheckEvent {
 
     Event<PermissionCheckEvent> EVENT = EventFactory.createArrayBacked(PermissionCheckEvent.class, (callbacks) -> (source, permission) -> {
         for (PermissionCheckEvent callback : callbacks) {
-            TriState res = callback.onPermissionCheck(source, permission);
-            if (res != TriState.DEFAULT) {
-                return res;
+            TriState state = callback.onPermissionCheck(source, permission);
+            if (state != TriState.DEFAULT) {
+                return state;
             }
         }
         return TriState.DEFAULT;
     });
 
-    TriState onPermissionCheck(CommandSource source, String permission);
+    @NotNull TriState onPermissionCheck(@NotNull CommandSource source, @NotNull String permission);
 
 }

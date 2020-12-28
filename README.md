@@ -2,7 +2,7 @@
 
 A simple permissions API for Fabric.
 
-### Usage (modders)
+### Usage (checking permissions)
 
 All the methods you need to check for permissions in a mod live in the `Permissions` class.
 
@@ -37,9 +37,25 @@ CommandManager.literal("test")
     .build();
 ```
 
-### Usage (permission provider mods)
+#### Checking permissions with a fallback default result
 
-Just register a callback for the `PermissionCheckEvent`.
+```java
+// Fallback to requiring permission level 4 if the permission isn't set
+if (Permissions.check(source, "mymod.permission", 4)) {
+    // Woo!
+}
+```
+
+```java
+// Fallback to true if the permission isn't set
+if (Permissions.check(source, "mymod.permission", true)) {
+    // Woo!
+}
+```
+
+### Usage (providing permissions)
+
+Just register a listener for the `PermissionCheckEvent`.
 
 ```java
 PermissionCheckEvent.EVENT.register((source, permission) -> {

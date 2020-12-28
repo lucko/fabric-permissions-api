@@ -30,6 +30,8 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -45,7 +47,7 @@ public interface Permissions {
      * @param permission the permission
      * @return the state of the permission
      */
-    static TriState getPermissionValue(CommandSource source, String permission) {
+    static @NotNull TriState getPermissionValue(@NotNull CommandSource source, @NotNull String permission) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(permission, "permission");
         return PermissionCheckEvent.EVENT.invoker().onPermissionCheck(source, permission);
@@ -60,7 +62,7 @@ public interface Permissions {
      * @param defaultValue the default value to use if nothing has been set
      * @return the result of the permission check
      */
-    static boolean check(CommandSource source, String permission, boolean defaultValue) {
+    static boolean check(@NotNull CommandSource source, @NotNull String permission, boolean defaultValue) {
         return getPermissionValue(source, permission).orElse(defaultValue);
     }
 
@@ -73,7 +75,7 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
      */
-    static boolean check(CommandSource source, String permission, int defaultRequiredLevel) {
+    static boolean check(@NotNull CommandSource source, @NotNull String permission, int defaultRequiredLevel) {
         return getPermissionValue(source, permission).orElseGet(() -> source.hasPermissionLevel(defaultRequiredLevel));
     }
 
@@ -85,7 +87,7 @@ public interface Permissions {
      * @param permission the permission to check
      * @return the result of the permission check
      */
-    static boolean check(CommandSource source, String permission) {
+    static boolean check(@NotNull CommandSource source, @NotNull String permission) {
         return getPermissionValue(source, permission).orElse(false);
     }
 
@@ -97,7 +99,8 @@ public interface Permissions {
      * @param defaultValue the default value to use if nothing has been set
      * @return a predicate that will perform the permission check
      */
-    static Predicate<ServerCommandSource> require(String permission, boolean defaultValue) {
+    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, boolean defaultValue) {
+        Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission, defaultValue);
     }
 
@@ -110,7 +113,8 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return a predicate that will perform the permission check
      */
-    static Predicate<ServerCommandSource> require(String permission, int defaultRequiredLevel) {
+    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, int defaultRequiredLevel) {
+        Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission, defaultRequiredLevel);
     }
 
@@ -121,7 +125,8 @@ public interface Permissions {
      * @param permission the permission to check
      * @return a predicate that will perform the permission check
      */
-    static Predicate<ServerCommandSource> require(String permission) {
+    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission) {
+        Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission);
     }
 
@@ -132,10 +137,9 @@ public interface Permissions {
      * @param permission the permission
      * @return the state of the permission
      */
-    static TriState getPermissionValue(Entity entity, String permission) {
+    static @NotNull TriState getPermissionValue(@NotNull Entity entity, @NotNull String permission) {
         Objects.requireNonNull(entity, "entity");
-        Objects.requireNonNull(permission, "permission");
-        return PermissionCheckEvent.EVENT.invoker().onPermissionCheck(entity.getCommandSource(), permission);
+        return getPermissionValue(entity.getCommandSource(), permission);
     }
 
     /**
@@ -147,8 +151,9 @@ public interface Permissions {
      * @param defaultValue the default value to use if nothing has been set
      * @return the result of the permission check
      */
-    static boolean check(Entity entity, String permission, boolean defaultValue) {
-        return getPermissionValue(entity, permission).orElse(defaultValue);
+    static boolean check(@NotNull Entity entity, @NotNull String permission, boolean defaultValue) {
+        Objects.requireNonNull(entity, "entity");
+        return check(entity.getCommandSource(), permission, defaultValue);
     }
 
     /**
@@ -160,8 +165,9 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
      */
-    static boolean check(Entity entity, String permission, int defaultRequiredLevel) {
-        return getPermissionValue(entity, permission).orElseGet(() -> entity.hasPermissionLevel(defaultRequiredLevel));
+    static boolean check(@NotNull Entity entity, @NotNull String permission, int defaultRequiredLevel) {
+        Objects.requireNonNull(entity, "entity");
+        return check(entity.getCommandSource(), permission, defaultRequiredLevel);
     }
 
     /**
@@ -172,8 +178,9 @@ public interface Permissions {
      * @param permission the permission to check
      * @return the result of the permission check
      */
-    static boolean check(Entity entity, String permission) {
-        return getPermissionValue(entity, permission).orElse(false);
+    static boolean check(@NotNull Entity entity, @NotNull String permission) {
+        Objects.requireNonNull(entity, "entity");
+        return check(entity.getCommandSource(), permission);
     }
 
 }
