@@ -9,4 +9,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'fabric-permissions-api-v0'
+rootProject.name = 'fabric-permissions-api'

@@ -2,6 +2,23 @@
 
 A simple permissions API for Fabric.
 
+Download on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fabric-permissions-api).
+
+### Dependency
+
+Add the following to your build script:
+```groovy
+repositories {
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+
+dependencies {
+    modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
+}
+```
+
+Then depend on `"fabric-permissions-api-v0": "*"` in your fabric.mod.json.
+
 ### Usage (checking permissions)
 
 All the methods you need to check for permissions in a mod live in the `Permissions` class.
