@@ -19,14 +19,7 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
     mappings "net.fabricmc:yarn:${minecraftVersion}+build.${yarnBuild}:v2"
     modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
-
-    Set<String> apiModules = [
-            'fabric-api-base'
-    ]
-
-    apiModules.forEach {
-        modImplementation(include(fabricApi.module(it, fabricApiVersion)))
-    }
+    modImplementation(fabricApi.module('fabric-api-base', fabricApiVersion))
 }
 
 processResources {
