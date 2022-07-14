@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
+    modImplementation 'me.lucko:fabric-permissions-api:0.2-SNAPSHOT'
 }
 ```
 
@@ -17,7 +17,7 @@ Then depend on `"fabric-permissions-api-v0": "*"` in your fabric.mod.json.
 
 ## Usage (checking permissions)
 
-All the methods you need to check for permissions in a mod live in the `Permissions` class.
+All the methods you need to check for permissions are in the `Permissions` class.
 
 #### Checking permissions for an `Entity`
 This of course includes all subtypes, most notably `ServerPlayerEntity`.
@@ -66,6 +66,42 @@ if (Permissions.check(source, "mymod.permission", true)) {
 }
 ```
 
+## Usage (getting options)
+
+All the methods you need to get option values are in the `Options` class.
+
+#### Getting options for an `Entity`
+This of course includes all subtypes, most notably `ServerPlayerEntity`.
+
+```java
+ServerPlayerEntity player = ...;
+Optional<String> value = Options.get(player, "prefix");
+```
+
+#### Getting options for a `CommandSource`
+
+```java
+CommandSource source = ...;
+Optional<String> value = Options.get(source, "prefix");
+```
+
+#### Getting options with a fallback default value
+
+```java
+// Fallback to a different string the option isn't set
+String value = Options.get(source, "prefix", "[Default]");
+```
+
+#### Getting options and transforming the result inline
+
+```java
+// Transform the value if it is returned
+Optional<Integer> value = Options.get(source, "balance", Integer::parseInt);
+
+// Transform the value or fallback to a default value
+int value = Options.get(source, "balance", 0, Integer::parseInt);
+```
+
 ## Usage (providing permissions)
 
 Just register a listener for the `PermissionCheckEvent`.
@@ -76,5 +112,18 @@ PermissionCheckEvent.EVENT.register((source, permission) -> {
         return TriState.TRUE;
     }
     return TriState.DEFAULT;
+});
+```
+
+## Usage (providing options)
+
+Just register a listener for the `OptionRequestEvent`.
+
+```java
+OptionRequestEvent.EVENT.register((source, key) -> {
+    if (key.equals("balance")) {
+        return Optional.of(getPlayerBalance(source).toString());
+    }
+    return Optional.empty();
 });
 ```

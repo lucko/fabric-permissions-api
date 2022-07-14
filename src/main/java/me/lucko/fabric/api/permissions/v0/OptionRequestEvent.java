@@ -27,22 +27,20 @@ package me.lucko.fabric.api.permissions.v0;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.command.CommandSource;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
- * Simple meta fetch event for {@link CommandSource}s.
+ * Simple option request event for {@link CommandSource}s.
  */
-public interface MetaFetchEvent {
+public interface OptionRequestEvent {
 
-    Event<MetaFetchEvent> EVENT = EventFactory.createArrayBacked(MetaFetchEvent.class, (callbacks) -> (source, permission) -> {
-        for (MetaFetchEvent callback : callbacks) {
-            Optional<String> value = callback.onMetaFetch(source, permission);
+    Event<OptionRequestEvent> EVENT = EventFactory.createArrayBacked(OptionRequestEvent.class, (callbacks) -> (source, key) -> {
+        for (OptionRequestEvent callback : callbacks) {
+            Optional<String> value = callback.onOptionRequest(source, key);
             if (value.isPresent()) {
                 return value;
             }
@@ -50,5 +48,5 @@ public interface MetaFetchEvent {
         return Optional.empty();
     });
 
-    @NotNull Optional<String> onMetaFetch(@NotNull CommandSource source, @NotNull String key);
+    @NotNull Optional<String> onOptionRequest(@NotNull CommandSource source, @NotNull String key);
 }
