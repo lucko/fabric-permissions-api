@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.5-SNAPSHOT'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -7,19 +7,19 @@ repositories {
     maven { url 'https://maven.fabricmc.net/' }
 }
 
-def minecraftVersion = '1.16.4'
-def yarnBuild = 7
-def loaderVersion = '0.10.8'
-def fabricApiVersion = '0.28.4+1.16'
+def minecraftVersion = '1.19'
+def yarnBuild = 4
+def loaderVersion = '0.14.8'
+def fabricApiVersion = '0.57.0+1.19'
 
 group = 'me.lucko'
-version = '0.1-SNAPSHOT'
+version = '0.2-SNAPSHOT'
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
     mappings "net.fabricmc:yarn:${minecraftVersion}+build.${yarnBuild}:v2"
     modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
-    modImplementation(fabricApi.module('fabric-api-base', fabricApiVersion))
+    modImplementation(fabricApi.module("fabric-api-base", fabricApiVersion))
 }
 
 processResources {
