@@ -90,7 +90,7 @@ public interface Options {
     static <T> @NotNull Optional<T> get(@NotNull CommandSource source, @NotNull String key, @NotNull Function<String, ? extends T> valueTransformer) {
         return get(source, key).flatMap(value -> {
             try {
-                return Optional.ofNullable(valueTransformer.apply(key));
+                return Optional.ofNullable(valueTransformer.apply(value));
             } catch (IllegalArgumentException e) {
                 return Optional.empty();
             }
@@ -121,13 +121,7 @@ public interface Options {
      */
     @Contract("_, _, !null, _ -> !null")
     static <T> T get(@NotNull CommandSource source, @NotNull String key, T defaultValue, @NotNull Function<String, ? extends T> valueTransformer) {
-        return get(source, key).<T>flatMap(value -> {
-            try {
-                return Optional.of(valueTransformer.apply(key));
-            } catch (IllegalArgumentException e) {
-                return Optional.empty();
-            }
-        }).orElse(defaultValue);
+        return Options.<T>get(source, key, valueTransformer).orElse(defaultValue);
     }
 
     /**
