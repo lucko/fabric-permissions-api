@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'fabric-loom' version '1.0-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -13,7 +13,7 @@ def loaderVersion = '0.14.8'
 def fabricApiVersion = '0.57.0+1.19'
 
 group = 'me.lucko'
-version = '0.2-SNAPSHOT'
+version = '0.3-SNAPSHOT'
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
