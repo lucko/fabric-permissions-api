@@ -138,6 +138,15 @@ PermissionCheckEvent.EVENT.register((source, permission) -> {
 });
 ```
 
+```java
+OfflinePermissionCheckEvent.EVENT.register((uuid, permission) -> {
+    if (isSuperAdmin(uuid)) {
+        return CompletableFuture.completedFuture(TriState.TRUE);
+    }
+    return CompletableFuture.completedFuture(TriState.DEFAULT);
+});
+```
+
 ## Usage (providing options)
 
 Just register a listener for the `OptionRequestEvent`.
