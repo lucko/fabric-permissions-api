@@ -28,7 +28,6 @@ package me.lucko.fabric.api.permissions.v0;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.command.CommandSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -39,13 +38,20 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface OfflinePermissionCheckEvent {
 
-    Event<OfflinePermissionCheckEvent> EVENT = EventFactory.createArrayBacked(OfflinePermissionCheckEvent.class, (callbacks) -> (source, permission) -> {
-        for (OfflinePermissionCheckEvent callback : callbacks) {
-            CompletableFuture<TriState> future = callback.onPermissionCheck(source, permission);
-            if (future.isDone() && future.join() == TriState.DEFAULT) continue;
-            return future;
+    Event<OfflinePermissionCheckEvent> EVENT = EventFactory.createArrayBacked(OfflinePermissionCheckEvent.class, (callbacks) -> (uuid, permission) -> {
+        CompletableFuture<TriState>[] futures = new CompletableFuture[callbacks.length];
+        for (int i = 0; i < callbacks.length; i++) {
+            futures[i] = callbacks[i].onPermissionCheck(uuid, permission);
         }
-        return CompletableFuture.completedFuture(TriState.DEFAULT);
+        return CompletableFuture.supplyAsync(() -> {
+            for (CompletableFuture<TriState> future : futures) {
+                TriState triState = future.join();
+                if (triState != TriState.DEFAULT) {
+                    return triState;
+                }
+            }
+            return TriState.DEFAULT;
+        });
     });
 
     @NotNull CompletableFuture<TriState> onPermissionCheck(@NotNull UUID uuid, @NotNull String permission);
