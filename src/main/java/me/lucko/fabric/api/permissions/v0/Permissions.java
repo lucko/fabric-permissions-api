@@ -37,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
 /**
@@ -190,7 +191,7 @@ public interface Permissions {
     /**
      * Gets the {@link TriState state} of a {@code permission} for the given (potentially) offline player.
      *
-     * @param uuid of the player
+     * @param uuid the player uuid
      * @param permission the permission
      * @return the state of the permission
      */
@@ -210,7 +211,7 @@ public interface Permissions {
      * @return the result of the permission check
      */
     static CompletableFuture<Boolean> check(@NotNull UUID uuid, @NotNull String permission, boolean defaultValue) {
-        return getPermissionValue(uuid, permission).thenApplyAsync(triState -> triState.orElse(defaultValue));
+        return getPermissionValue(uuid, permission).thenApplyAsync(state -> state.orElse(defaultValue));
     }
 
     /**
@@ -222,7 +223,7 @@ public interface Permissions {
      * @return the result of the permission check
      */
     static CompletableFuture<Boolean> check(@NotNull UUID uuid, @NotNull String permission) {
-        return getPermissionValue(uuid, permission).thenApplyAsync(triState -> triState.orElse(false));
+        return getPermissionValue(uuid, permission).thenApplyAsync(state -> state.orElse(false));
     }
 
     /**
@@ -240,6 +241,19 @@ public interface Permissions {
     }
 
     /**
+     * Performs a permission check, falling back to {@code false} if the resultant state
+     * is {@link TriState#DEFAULT}.
+     *
+     * @param profile the player profile to perform the check for
+     * @param permission the permission to check
+     * @return the result of the permission check
+     */
+    static CompletableFuture<Boolean> check(@NotNull GameProfile profile, @NotNull String permission) {
+        Objects.requireNonNull(profile, "profile");
+        return check(profile.getId(), permission);
+    }
+
+    /**
      * Performs a permission check, falling back to requiring the {@code defaultRequiredLevel}
      * if the resultant state is {@link TriState#DEFAULT}.
      *
@@ -252,20 +266,8 @@ public interface Permissions {
     static CompletableFuture<Boolean> check(@NotNull GameProfile profile, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
         Objects.requireNonNull(profile, "profile");
         Objects.requireNonNull(server, "server");
-        return getPermissionValue(profile.getId(), permission).thenApplyAsync(triState -> triState.orElseGet(() -> server.getPermissionLevel(profile) >= defaultRequiredLevel));
-    }
-
-    /**
-     * Performs a permission check, falling back to {@code false} if the resultant state
-     * is {@link TriState#DEFAULT}.
-     *
-     * @param profile the player profile to perform the check for
-     * @param permission the permission to check
-     * @return the result of the permission check
-     */
-    static CompletableFuture<Boolean> check(@NotNull GameProfile profile, @NotNull String permission) {
-        Objects.requireNonNull(profile, "profile");
-        return check(profile.getId(), permission);
+        BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(profile) >= defaultRequiredLevel;
+        return getPermissionValue(profile.getId(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
     }
 
 }

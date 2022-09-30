@@ -10,10 +10,10 @@ repositories {
 
 dependencies {
     // Approach #1: Ensure fabric-permissions-api is always available by including it within your own jar (it's only ~8KB!)
-    include(modImplementation('me.lucko:fabric-permissions-api:0.3-SNAPSHOT'))
+    include(modImplementation('me.lucko:fabric-permissions-api:0.2-SNAPSHOT'))
     
     // Approach #2: Depend on fabric-permissions-api, but require that users install it themselves
-    modImplementation 'me.lucko:fabric-permissions-api:0.3-SNAPSHOT'
+    modImplementation 'me.lucko:fabric-permissions-api:0.2-SNAPSHOT'
 }
 ```
 
@@ -71,7 +71,7 @@ if (Permissions.check(source, "mymod.permission", true)) {
 ```
 
 #### Checking permissions for a (potentially) offline player
-Checking offline player permissions is a bit more complicated, because you have to deal with [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html).
+Permission checks for offline players can be made using the players unique id (UUID). The result is returned as a [CompletableFuture](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html).
 ```java
 UUID uuid = ...;
 Permissions.check(uuid, "mymod.permission").thenAcceptAsync(result -> {
@@ -81,10 +81,10 @@ Permissions.check(uuid, "mymod.permission").thenAcceptAsync(result -> {
 });
 ```
 
-You may define blocking method, which will be (kind of) simple, but will lag the server if it's not called async
+To simplify checks **not** made on the server thread, you can use `join()`.
 ```java
 UUID uuid = ...;
-if (Permissions.check(uuid, "mymod.permission").join()) { // ouch! (blocks until the data is ready)
+if (Permissions.check(uuid, "mymod.permission").join()) {
     // Woo    
 };
 ```
