@@ -243,15 +243,15 @@ public interface Permissions {
      * Performs a permission check, falling back to requiring the {@code defaultRequiredLevel}
      * if the resultant state is {@link TriState#DEFAULT}.
      *
-     * @param server instance to check permission level
      * @param profile the player profile to perform the check for
      * @param permission the permission to check
      * @param defaultRequiredLevel the required permission level to check for as a fallback
+     * @param server instance to check permission level
      * @return the result of the permission check
      */
-    static CompletableFuture<Boolean> check(@NotNull MinecraftServer server, @NotNull GameProfile profile, @NotNull String permission, int defaultRequiredLevel) {
-        Objects.requireNonNull(server, "server");
+    static CompletableFuture<Boolean> check(@NotNull GameProfile profile, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
         Objects.requireNonNull(profile, "profile");
+        Objects.requireNonNull(server, "server");
         return getPermissionValue(profile.getId(), permission).thenApplyAsync(triState -> triState.orElseGet(() -> server.getPermissionLevel(profile) >= defaultRequiredLevel));
     }
 

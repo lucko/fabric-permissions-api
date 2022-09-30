@@ -84,7 +84,7 @@ Permissions.check(uuid, "mymod.permission").thenAcceptAsync(result -> {
 You may define blocking method, which will be (kind of) simple, but will lag the server if it's not called async
 ```java
 UUID uuid = ...;
-if (Permissions.check(uuid, "mymod.permission").join) { // ouch! (blocks until the data is ready)
+if (Permissions.check(uuid, "mymod.permission").join()) { // ouch! (blocks until the data is ready)
     // Woo    
 };
 ```

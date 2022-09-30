@@ -39,19 +39,16 @@ import java.util.concurrent.CompletableFuture;
 public interface OfflinePermissionCheckEvent {
 
     Event<OfflinePermissionCheckEvent> EVENT = EventFactory.createArrayBacked(OfflinePermissionCheckEvent.class, (callbacks) -> (uuid, permission) -> {
-        CompletableFuture<TriState>[] futures = new CompletableFuture[callbacks.length];
-        for (int i = 0; i < callbacks.length; i++) {
-            futures[i] = callbacks[i].onPermissionCheck(uuid, permission);
-        }
-        return CompletableFuture.supplyAsync(() -> {
-            for (CompletableFuture<TriState> future : futures) {
-                TriState triState = future.join();
+        CompletableFuture<TriState> res = CompletableFuture.completedFuture(TriState.DEFAULT);
+        for (OfflinePermissionCheckEvent callback : callbacks) {
+            res = res.thenCompose(triState -> {
                 if (triState != TriState.DEFAULT) {
-                    return triState;
+                    return CompletableFuture.completedFuture(triState);
                 }
-            }
-            return TriState.DEFAULT;
-        });
+                return callback.onPermissionCheck(uuid, permission);
+            });
+        }
+        return res;
     });
 
     @NotNull CompletableFuture<TriState> onPermissionCheck(@NotNull UUID uuid, @NotNull String permission);
