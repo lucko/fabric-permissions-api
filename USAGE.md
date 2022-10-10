@@ -70,6 +70,25 @@ if (Permissions.check(source, "mymod.permission", true)) {
 }
 ```
 
+#### Checking permissions for a (potentially) offline player
+Permission checks for offline players can be made using the players unique id (UUID). The result is returned as a [CompletableFuture](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html).
+```java
+UUID uuid = ...;
+Permissions.check(uuid, "mymod.permission").thenAcceptAsync(result -> {
+    if (result) {
+        // Woo!
+    }
+});
+```
+
+To simplify checks **not** made on the server thread, you can use `join()`.
+```java
+UUID uuid = ...;
+if (Permissions.check(uuid, "mymod.permission").join()) {
+    // Woo    
+};
+```
+
 ## Usage (getting options)
 
 All the methods you need to get option values are in the `Options` class.
@@ -116,6 +135,15 @@ PermissionCheckEvent.EVENT.register((source, permission) -> {
         return TriState.TRUE;
     }
     return TriState.DEFAULT;
+});
+```
+
+```java
+OfflinePermissionCheckEvent.EVENT.register((uuid, permission) -> {
+    if (isSuperAdmin(uuid)) {
+        return CompletableFuture.completedFuture(TriState.TRUE);
+    }
+    return CompletableFuture.completedFuture(TriState.DEFAULT);
 });
 ```
 
