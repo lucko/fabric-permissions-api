@@ -13,7 +13,7 @@ def loaderVersion = '0.14.8'
 def fabricApiVersion = '0.57.0+1.19'
 
 group = 'me.lucko'
-version = '0.2-SNAPSHOT'
+version = '0.3-SNAPSHOT'
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
@@ -41,7 +41,7 @@ tasks.withType(JavaCompile) {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
+    archiveClassifier = "sources"
     from sourceSets.main.allSource
 }
 
