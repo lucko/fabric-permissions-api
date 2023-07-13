@@ -10,10 +10,10 @@ repositories {
 
 dependencies {
     // Approach #1: Ensure fabric-permissions-api is always available by including it within your own jar (it's only ~8KB!)
-    include(modImplementation('me.lucko:fabric-permissions-api:0.2-SNAPSHOT'))
+    include(modImplementation('me.lucko:fabric-permissions-api:0.3-SNAPSHOT'))
     
     // Approach #2: Depend on fabric-permissions-api, but require that users install it themselves
-    modImplementation 'me.lucko:fabric-permissions-api:0.2-SNAPSHOT'
+    modImplementation 'me.lucko:fabric-permissions-api:0.3-SNAPSHOT'
 }
 ```
 
