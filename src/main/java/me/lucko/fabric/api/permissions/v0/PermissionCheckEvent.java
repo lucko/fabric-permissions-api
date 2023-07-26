@@ -29,6 +29,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.command.CommandSource;
+import net.minecraft.util.Identifier;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +38,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface PermissionCheckEvent {
 
-    Event<PermissionCheckEvent> EVENT = EventFactory.createArrayBacked(PermissionCheckEvent.class, (callbacks) -> (source, permission) -> {
+    // Used for mods that want to add permissions for a user that should take higher precedence over a permission handler.
+    Identifier BEFORE_HANDLERS = new Identifier("fabric-permissions-api", "before_handlers");
+
+    Event<PermissionCheckEvent> EVENT = EventFactory.createWithPhases(PermissionCheckEvent.class, (callbacks) -> (source, permission) -> {
         for (PermissionCheckEvent callback : callbacks) {
             TriState state = callback.onPermissionCheck(source, permission);
             if (state != TriState.DEFAULT) {
@@ -45,7 +49,7 @@ public interface PermissionCheckEvent {
             }
         }
         return TriState.DEFAULT;
-    });
+    }, BEFORE_HANDLERS, Event.DEFAULT_PHASE);
 
     @NotNull TriState onPermissionCheck(@NotNull CommandSource source, @NotNull String permission);
 
