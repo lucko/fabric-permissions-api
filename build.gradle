@@ -9,10 +9,10 @@ repositories {
     maven { url 'https://maven.fabricmc.net/' }
 }
 
-def minecraftVersion = '1.20.1'
-def yarnBuild = 4
-def loaderVersion = '0.14.21'
-def fabricApiVersion = '0.86.0+1.20.1'
+def minecraftVersion = '1.20.4'
+def yarnBuild = 3
+def loaderVersion = '0.15.10'
+def fabricApiVersion = '0.97.0+1.20.4'
 
 group = 'me.lucko'
 version = '0.3-SNAPSHOT'
@@ -22,7 +22,8 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
     mappings "net.fabricmc:yarn:${minecraftVersion}+build.${yarnBuild}:v2"
     modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
-    modImplementation(fabricApi.module("fabric-api-base", fabricApiVersion))
+    modImplementation platform("net.fabricmc.fabric-api:fabric-api-bom:${fabricApiVersion}")
+    modImplementation "net.fabricmc.fabric-api:fabric-api-base"
 }
 
 processResources {
