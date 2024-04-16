@@ -191,7 +191,7 @@ public interface Permissions {
     /**
      * Gets the {@link TriState state} of a {@code permission} for the given (potentially) offline player.
      *
-     * @param uuid the player uuid
+     * @param uuid the uuid of the player
      * @param permission the permission
      * @return the state of the permission
      */
@@ -205,7 +205,7 @@ public interface Permissions {
      * Performs a permission check, falling back to the {@code defaultValue} if the resultant
      * state is {@link TriState#DEFAULT}.
      *
-     * @param uuid the player to perform the check for
+     * @param uuid the uuid of the player to perform the check for
      * @param permission the permission to check
      * @param defaultValue the default value to use if nothing has been set
      * @return the result of the permission check
@@ -218,7 +218,7 @@ public interface Permissions {
      * Performs a permission check, falling back to {@code false} if the resultant state
      * is {@link TriState#DEFAULT}.
      *
-     * @param uuid the source to perform the check for
+     * @param uuid the uuid of the player to perform the check for
      * @param permission the permission to check
      * @return the result of the permission check
      */

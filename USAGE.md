@@ -125,6 +125,21 @@ Optional<Integer> value = Options.get(source, "balance", Integer::parseInt);
 int value = Options.get(source, "balance", 0, Integer::parseInt);
 ```
 
+#### Getting options for a (potentially) offline player
+Option requests for offline players can be made using the players unique id (UUID). The result is returned as a [CompletableFuture](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html).
+```java
+UUID uuid = ...;
+Options.get(uuid, "prefix").thenAcceptAsync(prefix -> {
+    // Do something with the result
+});
+```
+
+To simplify checks **not** made on the server thread, you can use `join()`.
+```java
+UUID uuid = ...;
+Optional<String> prefix = Options.get(uuid, "prefix").join();
+```
+
 ## Usage (providing permissions)
 
 Just register a listener for the `PermissionCheckEvent`.
@@ -138,12 +153,16 @@ PermissionCheckEvent.EVENT.register((source, permission) -> {
 });
 ```
 
+If your plugin also supports lookups for offline players, register a listener for the `OfflinePermissionCheckEvent`.
+
 ```java
 OfflinePermissionCheckEvent.EVENT.register((uuid, permission) -> {
-    if (isSuperAdmin(uuid)) {
-        return CompletableFuture.completedFuture(TriState.TRUE);
-    }
-    return CompletableFuture.completedFuture(TriState.DEFAULT);
+    return CompletableFuture.supplyAsync(() -> {
+        if (isSuperAdmin(uuid)) {
+            return TriState.TRUE;
+        }
+        return TriState.DEFAULT;
+    });
 });
 ```
 
@@ -157,5 +176,18 @@ OptionRequestEvent.EVENT.register((source, key) -> {
         return Optional.of(getPlayerBalance(source).toString());
     }
     return Optional.empty();
+});
+```
+
+If your plugin also supports lookups for offline players, register a listener for the `OfflineOptionRequestEvent`.
+
+```java
+OfflineOptionRequestEvent.EVENT.register((uuid, key) -> {
+    if (key.equals("balance")) {
+        return CompletableFuture.supplyAsync(() -> {
+            return Optional.of(getPlayerBalance(uuid).toString());
+        });
+    }
+    return CompletableFuture.completedFuture(Optional.empty());
 });
 ```
