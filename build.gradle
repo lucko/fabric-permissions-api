@@ -55,6 +55,7 @@ indra {
     }
     mitLicense()
     configurePublications {
+        from components.java
         pom {
             developers {
                 developer {
