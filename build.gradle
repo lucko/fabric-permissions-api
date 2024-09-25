@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'fabric-loom' version '1.7-SNAPSHOT'
     id 'maven-publish'
     id 'net.kyori.indra.publishing.sonatype' version '3.1.3'
     id 'net.kyori.indra.publishing' version '3.1.3'
@@ -9,10 +9,10 @@ repositories {
     maven { url 'https://maven.fabricmc.net/' }
 }
 
-def minecraftVersion = '1.20.4'
-def yarnBuild = 3
-def loaderVersion = '0.15.10'
-def fabricApiVersion = '0.97.0+1.20.4'
+def minecraftVersion = '24w39a'
+def yarnBuild = 5
+def loaderVersion = '0.16.5'
+def fabricApiVersion = '0.105.0+1.21.2'
 
 group = 'me.lucko'
 version = '0.3.2-SNAPSHOT'
@@ -40,7 +40,7 @@ java {
     withSourcesJar()
     withJavadocJar()
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
