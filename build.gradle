@@ -9,13 +9,13 @@ repositories {
     maven { url 'https://maven.fabricmc.net/' }
 }
 
-def minecraftVersion = '24w39a'
-def yarnBuild = 5
-def loaderVersion = '0.16.5'
-def fabricApiVersion = '0.105.0+1.21.2'
+def minecraftVersion = '1.21.2'
+def yarnBuild = 1
+def loaderVersion = '0.16.7'
+def fabricApiVersion = '0.106.1+1.21.2'
 
 group = 'me.lucko'
-version = '0.3.2-SNAPSHOT'
+version = '0.3.3-SNAPSHOT'
 description = 'A simple permissions API for Fabric'
 
 dependencies {
