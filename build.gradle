@@ -9,10 +9,10 @@ repositories {
     maven { url 'https://maven.fabricmc.net/' }
 }
 
-def minecraftVersion = '1.21.2'
-def yarnBuild = 1
+def minecraftVersion = '1.21.3'
+def yarnBuild = 2
 def loaderVersion = '0.16.7'
-def fabricApiVersion = '0.106.1+1.21.2'
+def fabricApiVersion = '0.106.1+1.21.3'
 
 group = 'me.lucko'
 version = '0.3.3-SNAPSHOT'

@@ -25,27 +25,24 @@
 
 package me.lucko.fabric.api.permissions.v0;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.command.CommandSource;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
 
-/**
- * Simple permissions check event for {@link CommandSource}s.
- */
-public interface PermissionCheckEvent {
+class Util {
 
-    Event<PermissionCheckEvent> EVENT = EventFactory.createArrayBacked(PermissionCheckEvent.class, (callbacks) -> (source, permission) -> {
-        for (PermissionCheckEvent callback : callbacks) {
-            TriState state = callback.onPermissionCheck(source, permission);
-            if (state != TriState.DEFAULT) {
-                return state;
-            }
+    static ServerCommandSource commandSourceFromEntity(Entity entity) {
+        if (entity instanceof ServerPlayerEntity) {
+            return ((ServerPlayerEntity) entity).getCommandSource();
         }
-        return TriState.DEFAULT;
-    });
-
-    @NotNull TriState onPermissionCheck(@NotNull CommandSource source, @NotNull String permission);
+        World world = entity.getWorld();
+        if (world instanceof ServerWorld) {
+            return entity.getCommandSource((ServerWorld) world);
+        } else {
+            throw new IllegalArgumentException("Entity '" + entity + "' is not a server entity. Try passing a CommandSource directly instead.");
+        }
+    }
 
 }
