@@ -31,9 +31,6 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ServerWorld;
-
-import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -146,8 +143,7 @@ public interface Permissions {
      */
     static @NotNull TriState getPermissionValue(@NotNull Entity entity, @NotNull String permission) {
         Objects.requireNonNull(entity, "entity");
-        World world = entity.getWorld();
-        return getPermissionValue(entity.getCommandSource(world instanceof ServerWorld ? (ServerWorld) world : null), permission);
+        return getPermissionValue(Util.commandSourceFromEntity(entity), permission);
     }
 
     /**
@@ -161,8 +157,7 @@ public interface Permissions {
      */
     static boolean check(@NotNull Entity entity, @NotNull String permission, boolean defaultValue) {
         Objects.requireNonNull(entity, "entity");
-        World world = entity.getWorld();
-        return check(entity.getCommandSource(world instanceof ServerWorld ? (ServerWorld) world : null), permission, defaultValue);
+        return check(Util.commandSourceFromEntity(entity), permission, defaultValue);
     }
 
     /**
@@ -176,8 +171,7 @@ public interface Permissions {
      */
     static boolean check(@NotNull Entity entity, @NotNull String permission, int defaultRequiredLevel) {
         Objects.requireNonNull(entity, "entity");
-        World world = entity.getWorld();
-        return check(entity.getCommandSource(world instanceof ServerWorld ? (ServerWorld) world : null), permission, defaultRequiredLevel);
+        return check(Util.commandSourceFromEntity(entity), permission, defaultRequiredLevel);
     }
 
     /**
@@ -190,8 +184,7 @@ public interface Permissions {
      */
     static boolean check(@NotNull Entity entity, @NotNull String permission) {
         Objects.requireNonNull(entity, "entity");
-        World world = entity.getWorld();
-        return check(entity.getCommandSource(world instanceof ServerWorld ? (ServerWorld) world : null), permission);
+        return check(Util.commandSourceFromEntity(entity), permission);
     }
 
     /**
