@@ -28,6 +28,7 @@ package me.lucko.fabric.api.permissions.v0;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.PermissionLevelSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -47,5 +48,5 @@ public interface OptionRequestEvent {
         return Optional.empty();
     });
 
-    @NotNull Optional<String> onOptionRequest(@NotNull CommandSource source, @NotNull String key);
+    @NotNull Optional<String> onOptionRequest(@NotNull PermissionLevelSource source, @NotNull String key);
 }

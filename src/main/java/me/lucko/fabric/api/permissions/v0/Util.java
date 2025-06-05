@@ -25,15 +25,15 @@
 
 package me.lucko.fabric.api.permissions.v0;
 
+import net.minecraft.command.PermissionLevelSource;
 import net.minecraft.entity.Entity;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 class Util {
 
-    static ServerCommandSource commandSourceFromEntity(Entity entity) {
+    static PermissionLevelSource permissionSourceFromEntity(Entity entity) {
         if (entity instanceof ServerPlayerEntity) {
             return ((ServerPlayerEntity) entity).getCommandSource();
         }
