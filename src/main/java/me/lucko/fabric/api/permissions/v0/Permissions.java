@@ -105,7 +105,7 @@ public interface Permissions {
      * @param defaultValue the default value to use if nothing has been set
      * @return a predicate that will perform the permission check
      */
-    static @NotNull Predicate<CommandSource> require(@NotNull String permission, boolean defaultValue) {
+    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, boolean defaultValue) {
         Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission, defaultValue);
     }
@@ -119,7 +119,7 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return a predicate that will perform the permission check
      */
-    static @NotNull Predicate<CommandSource> require(@NotNull String permission, int defaultRequiredLevel) {
+    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, int defaultRequiredLevel) {
         Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission, defaultRequiredLevel);
     }
@@ -131,7 +131,7 @@ public interface Permissions {
      * @param permission the permission to check
      * @return a predicate that will perform the permission check
      */
-    static @NotNull Predicate<CommandSource> require(@NotNull String permission) {
+    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission) {
         Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission);
     }
@@ -270,4 +270,5 @@ public interface Permissions {
         BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(profile) >= defaultRequiredLevel;
         return getPermissionValue(profile.getId(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
     }
+
 }
