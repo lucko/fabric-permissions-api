@@ -29,6 +29,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.command.CommandSource;
+import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -46,6 +47,6 @@ public interface PermissionCheckEvent {
         return TriState.DEFAULT;
     });
 
-    @NotNull TriState onPermissionCheck(@NotNull CommandSource source, @NotNull String permission);
+    @NotNull TriState onPermissionCheck(@NotNull ServerCommandSource source, @NotNull String permission);
 
 }
