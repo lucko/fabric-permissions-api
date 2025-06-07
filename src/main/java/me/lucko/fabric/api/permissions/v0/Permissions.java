@@ -28,6 +28,7 @@ package me.lucko.fabric.api.permissions.v0;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.PermissionLevelSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -80,7 +81,7 @@ public interface Permissions {
      * @return the result of the permission check
      */
     static boolean check(@NotNull CommandSource source, @NotNull String permission, int defaultRequiredLevel) {
-        return getPermissionValue(source, permission).orElseGet(() -> source.hasPermissionLevel(defaultRequiredLevel));
+        return getPermissionValue(source, permission).orElseGet(() -> source instanceof PermissionLevelSource source1 ? source1.hasPermissionLevel(defaultRequiredLevel) : defaultRequiredLevel == 0);
     }
 
     /**
