@@ -26,8 +26,8 @@
 package me.lucko.fabric.api.permissions.v0;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
-import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +49,7 @@ public interface Options {
      * @param key the option key
      * @return the option value
      */
-    static @NotNull Optional<String> get(@NotNull ServerCommandSource source, @NotNull String key) {
+    static @NotNull Optional<String> get(@NotNull CommandSource source, @NotNull String key) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(key, "key");
         return OptionRequestEvent.EVENT.invoker().onOptionRequest(source, key);
@@ -65,7 +65,7 @@ public interface Options {
      * @return the option value
      */
     @Contract("_, _, !null -> !null")
-    static String get(@NotNull ServerCommandSource source, @NotNull String key, String defaultValue) {
+    static String get(@NotNull CommandSource source, @NotNull String key, String defaultValue) {
         return get(source, key).orElse(defaultValue);
     }
 
@@ -89,7 +89,7 @@ public interface Options {
      * @param <T> the type of the transformed result
      * @return the transformed option value
      */
-    static <T> @NotNull Optional<T> get(@NotNull ServerCommandSource source, @NotNull String key, @NotNull Function<String, ? extends T> valueTransformer) {
+    static <T> @NotNull Optional<T> get(@NotNull CommandSource source, @NotNull String key, @NotNull Function<String, ? extends T> valueTransformer) {
         return get(source, key).flatMap(value -> {
             try {
                 return Optional.ofNullable(valueTransformer.apply(value));
@@ -122,7 +122,7 @@ public interface Options {
      * @return the transformed option value
      */
     @Contract("_, _, !null, _ -> !null")
-    static <T> T get(@NotNull ServerCommandSource source, @NotNull String key, T defaultValue, @NotNull Function<String, ? extends T> valueTransformer) {
+    static <T> T get(@NotNull CommandSource source, @NotNull String key, T defaultValue, @NotNull Function<String, ? extends T> valueTransformer) {
         return Options.<T>get(source, key, valueTransformer).orElse(defaultValue);
     }
 

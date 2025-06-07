@@ -27,6 +27,8 @@ package me.lucko.fabric.api.permissions.v0;
 
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.PermissionLevelSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -50,7 +52,7 @@ public interface Permissions {
      * @param permission the permission
      * @return the state of the permission
      */
-    static @NotNull TriState getPermissionValue(@NotNull ServerCommandSource source, @NotNull String permission) {
+    static @NotNull TriState getPermissionValue(@NotNull CommandSource source, @NotNull String permission) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(permission, "permission");
         return PermissionCheckEvent.EVENT.invoker().onPermissionCheck(source, permission);
@@ -65,7 +67,7 @@ public interface Permissions {
      * @param defaultValue the default value to use if nothing has been set
      * @return the result of the permission check
      */
-    static boolean check(@NotNull ServerCommandSource source, @NotNull String permission, boolean defaultValue) {
+    static boolean check(@NotNull CommandSource source, @NotNull String permission, boolean defaultValue) {
         return getPermissionValue(source, permission).orElse(defaultValue);
     }
 
@@ -78,8 +80,9 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
      */
-    static boolean check(@NotNull ServerCommandSource source, @NotNull String permission, int defaultRequiredLevel) {
-        return getPermissionValue(source, permission).orElseGet(() -> source.hasPermissionLevel(defaultRequiredLevel));
+    static boolean check(@NotNull CommandSource source, @NotNull String permission, int defaultRequiredLevel) {
+        // Both implementations of CommandSource (ServerCommandSource and ClientCommandSource) have implemented PermissionLevelSource as of 1.21.6
+        return getPermissionValue(source, permission).orElseGet(() -> ((PermissionLevelSource) source).hasPermissionLevel(defaultRequiredLevel));
     }
 
     /**
@@ -90,7 +93,7 @@ public interface Permissions {
      * @param permission the permission to check
      * @return the result of the permission check
      */
-    static boolean check(@NotNull ServerCommandSource source, @NotNull String permission) {
+    static boolean check(@NotNull CommandSource source, @NotNull String permission) {
         return getPermissionValue(source, permission).orElse(false);
     }
 
@@ -102,7 +105,7 @@ public interface Permissions {
      * @param defaultValue the default value to use if nothing has been set
      * @return a predicate that will perform the permission check
      */
-    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, boolean defaultValue) {
+    static @NotNull Predicate<CommandSource> require(@NotNull String permission, boolean defaultValue) {
         Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission, defaultValue);
     }
@@ -116,7 +119,7 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return a predicate that will perform the permission check
      */
-    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, int defaultRequiredLevel) {
+    static @NotNull Predicate<CommandSource> require(@NotNull String permission, int defaultRequiredLevel) {
         Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission, defaultRequiredLevel);
     }
@@ -128,7 +131,7 @@ public interface Permissions {
      * @param permission the permission to check
      * @return a predicate that will perform the permission check
      */
-    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission) {
+    static @NotNull Predicate<CommandSource> require(@NotNull String permission) {
         Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission);
     }
@@ -267,5 +270,4 @@ public interface Permissions {
         BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(profile) >= defaultRequiredLevel;
         return getPermissionValue(profile.getId(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
     }
-
 }
