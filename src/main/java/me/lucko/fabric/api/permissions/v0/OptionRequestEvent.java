@@ -27,13 +27,13 @@ package me.lucko.fabric.api.permissions.v0;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.command.CommandSource;
+import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 /**
- * Simple option request event for {@link CommandSource}s.
+ * Simple option request event for {@link ServerCommandSource}s.
  */
 public interface OptionRequestEvent {
 
@@ -47,5 +47,5 @@ public interface OptionRequestEvent {
         return Optional.empty();
     });
 
-    @NotNull Optional<String> onOptionRequest(@NotNull CommandSource source, @NotNull String key);
+    @NotNull Optional<String> onOptionRequest(@NotNull ServerCommandSource source, @NotNull String key);
 }
