@@ -12,7 +12,8 @@
   "entrypoints": {},
   "depends": {
     "fabricloader": ">=0.9.0",
-    "fabric-api-base": "*"
+    "fabric-api-base": "*",
+    "minecraft": ">=1.21.6-"
   },
   "custom": {
     "modmenu": {
