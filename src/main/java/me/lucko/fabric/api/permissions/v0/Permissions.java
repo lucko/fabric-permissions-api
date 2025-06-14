@@ -81,7 +81,10 @@ public interface Permissions {
      * @return the result of the permission check
      */
     static boolean check(@NotNull CommandSource source, @NotNull String permission, int defaultRequiredLevel) {
-        return getPermissionValue(source, permission).orElseGet(() -> source instanceof PermissionLevelSource source1 ? source1.hasPermissionLevel(defaultRequiredLevel) : defaultRequiredLevel == 0);
+        return getPermissionValue(source, permission).orElseGet(() -> source instanceof PermissionLevelSource permissionSource
+                ? permissionSource.hasPermissionLevel(defaultRequiredLevel)
+                : defaultRequiredLevel == 0
+        );
     }
 
     /**
