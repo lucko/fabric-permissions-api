@@ -11,7 +11,7 @@
   "environment": "*",
   "entrypoints": {},
   "depends": {
-    "fabricloader": ">=1.0.0",
+    "fabricloader": ">=0.16.0",
     "fabric-api-base": "*",
     "minecraft": ">=1.21.6"
   },
