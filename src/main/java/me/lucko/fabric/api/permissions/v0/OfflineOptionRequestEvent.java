@@ -39,7 +39,7 @@ import java.util.concurrent.CompletableFuture;
 public interface OfflineOptionRequestEvent {
 
     Event<OfflineOptionRequestEvent> EVENT = EventFactory.createArrayBacked(OfflineOptionRequestEvent.class, (callbacks) -> (uuid, key) -> {
-        CompletableFuture<Optional<String>> res = CompletableFuture.completedFuture(null);
+        CompletableFuture<Optional<String>> res = CompletableFuture.completedFuture(Optional.empty());
         for (OfflineOptionRequestEvent callback : callbacks) {
             res = res.thenCompose(value -> {
                 if (value.isPresent()) {
