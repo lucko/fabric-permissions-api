@@ -63,6 +63,12 @@ indra {
                     url = 'https://lucko.me'
                 }
             }
+            withXml {
+                def root = asNode()
+                // maven central is sad about fabric's dependencies in the pom
+                root.remove(root.get('dependencies'))
+                root.remove(root.get('dependencyManagement'))
+            }
         }
     }
     signWithKeyFromProperties("signingKey", "signingPassword")
