@@ -37,7 +37,7 @@ class Util {
         if (entity instanceof ServerPlayerEntity) {
             return ((ServerPlayerEntity) entity).getCommandSource();
         }
-        World world = entity.getWorld();
+        World world = entity.getEntityWorld();
         if (world instanceof ServerWorld) {
             return entity.getCommandSource((ServerWorld) world);
         } else {

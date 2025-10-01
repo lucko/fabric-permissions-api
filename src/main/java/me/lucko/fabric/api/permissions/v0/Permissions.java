@@ -31,6 +31,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.PermissionLevelSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerConfigEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.NotNull;
 
@@ -240,7 +241,7 @@ public interface Permissions {
      */
     static CompletableFuture<Boolean> check(@NotNull GameProfile profile, @NotNull String permission, boolean defaultValue) {
         Objects.requireNonNull(profile, "profile");
-        return check(profile.getId(), permission, defaultValue);
+        return check(profile.id(), permission, defaultValue);
     }
 
     /**
@@ -253,7 +254,7 @@ public interface Permissions {
      */
     static CompletableFuture<Boolean> check(@NotNull GameProfile profile, @NotNull String permission) {
         Objects.requireNonNull(profile, "profile");
-        return check(profile.getId(), permission);
+        return check(profile.id(), permission);
     }
 
     /**
@@ -269,8 +270,52 @@ public interface Permissions {
     static CompletableFuture<Boolean> check(@NotNull GameProfile profile, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
         Objects.requireNonNull(profile, "profile");
         Objects.requireNonNull(server, "server");
-        BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(profile) >= defaultRequiredLevel;
-        return getPermissionValue(profile.getId(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
+        BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(new PlayerConfigEntry(profile)) >= defaultRequiredLevel;
+        return getPermissionValue(profile.id(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
+    }
+    
+    /**
+     * Performs a permission check, falling back to {@code false} if the resultant state
+     * is {@link TriState#DEFAULT}.
+     *
+     * @param entry the player config entry to perform the check for
+     * @param permission the permission to check
+     * @param defaultValue the default value to use if nothing has been set
+     * @return the result of the permission check
+     */
+    static CompletableFuture<Boolean> check(@NotNull PlayerConfigEntry entry, @NotNull String permission, boolean defaultValue) {
+        Objects.requireNonNull(entry, "entry");
+        return check(entry.id(), permission, defaultValue);
     }
 
+    /**
+     * Performs a permission check, falling back to {@code false} if the resultant state
+     * is {@link TriState#DEFAULT}.
+     *
+     * @param entry the player config entry to perform the check for
+     * @param permission the permission to check
+     * @return the result of the permission check
+     */
+    static CompletableFuture<Boolean> check(@NotNull PlayerConfigEntry entry, @NotNull String permission) {
+        Objects.requireNonNull(entry, "entry");
+        return check(entry.id(), permission);
+    }
+
+    /**
+     * Performs a permission check, falling back to requiring the {@code defaultRequiredLevel}
+     * if the resultant state is {@link TriState#DEFAULT}.
+     *
+     * @param entry the player config entry to perform the check for
+     * @param permission the permission to check
+     * @param defaultRequiredLevel the required permission level to check for as a fallback
+     * @param server instance to check permission level
+     * @return the result of the permission check
+     */
+    static CompletableFuture<Boolean> check(@NotNull PlayerConfigEntry entry, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
+        Objects.requireNonNull(entry, "entry");
+        Objects.requireNonNull(server, "server");
+        BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(entry) >= defaultRequiredLevel;
+        return getPermissionValue(entry.id(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
+    }
+    
 }
