@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.11-SNAPSHOT'
+    id 'fabric-loom' version '1.13-SNAPSHOT'
     id 'maven-publish'
     id 'net.kyori.indra.publishing.sonatype' version '3.2.0'
     id 'net.kyori.indra.publishing' version '3.2.0'
@@ -9,13 +9,13 @@ repositories {
     maven { url 'https://maven.fabricmc.net/' }
 }
 
-def minecraftVersion = '1.21.9'
+def minecraftVersion = '1.21.11-pre3'
 def yarnBuild = 1
-def loaderVersion = '0.17.2'
-def fabricApiVersion = '0.133.14+1.21.9'
+def loaderVersion = '0.18.1'
+def fabricApiVersion = '0.139.2+1.21.11'
 
 group = 'me.lucko'
-version = '0.5.1-SNAPSHOT'
+version = '0.6.0-SNAPSHOT'
 description = 'A simple permissions API for Fabric'
 
 dependencies {

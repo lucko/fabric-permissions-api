@@ -13,7 +13,7 @@
   "depends": {
     "fabricloader": ">=0.17.0",
     "fabric-api-base": "*",
-    "minecraft": ">=1.21.9"
+    "minecraft": ">=1.21.11-beta"
   },
   "custom": {
     "modmenu": {
