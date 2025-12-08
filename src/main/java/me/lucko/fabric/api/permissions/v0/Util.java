@@ -25,10 +25,12 @@
 
 package me.lucko.fabric.api.permissions.v0;
 
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 class Util {
@@ -43,6 +45,10 @@ class Util {
         } else {
             throw new IllegalArgumentException("Entity '" + entity + "' is not a server entity. Try passing a CommandSource directly instead.");
         }
+    }
+
+    static PermissionLevel permissionLevelFromInt(int level) {
+        return PermissionLevel.fromLevel(MathHelper.clamp(level, 0, PermissionLevel.OWNERS.getLevel()));
     }
 
 }

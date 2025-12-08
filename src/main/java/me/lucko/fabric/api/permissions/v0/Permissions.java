@@ -34,7 +34,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerConfigEntry;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -82,9 +81,11 @@ public interface Permissions {
      * @param permission the permission to check
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
+     * @deprecated use {@link #check(CommandSource, String, PermissionLevel)} instead
      */
+    @Deprecated
     static boolean check(@NotNull CommandSource source, @NotNull String permission, int defaultRequiredLevel) {
-        return check(source, permission, PermissionLevel.fromLevel(MathHelper.clamp(defaultRequiredLevel, 0, PermissionLevel.OWNERS.getLevel())));
+        return check(source, permission, Util.permissionLevelFromInt(defaultRequiredLevel));
     }
 
     /**
@@ -133,10 +134,13 @@ public interface Permissions {
      * @param permission the permission to check
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return a predicate that will perform the permission check
+     * @deprecated use {@link #require(String, PermissionLevel)} instead
      */
+    @Deprecated
     static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, int defaultRequiredLevel) {
         Objects.requireNonNull(permission, "permission");
-        return player -> check(player, permission, defaultRequiredLevel);
+        PermissionLevel level = Util.permissionLevelFromInt(defaultRequiredLevel);
+        return player -> check(player, permission, level);
     }
 
     /**
@@ -200,7 +204,9 @@ public interface Permissions {
      * @param permission the permission to check
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
+     * @deprecated use {@link #check(Entity, String, PermissionLevel)} instead
      */
+    @Deprecated
     static boolean check(@NotNull Entity entity, @NotNull String permission, int defaultRequiredLevel) {
         Objects.requireNonNull(entity, "entity");
         return check(Util.commandSourceFromEntity(entity), permission, defaultRequiredLevel);
@@ -308,9 +314,11 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @param server instance to check permission level
      * @return the result of the permission check
+     * @deprecated use {@link #check(GameProfile, String, PermissionLevel, MinecraftServer)} instead
      */
+    @Deprecated
     static CompletableFuture<Boolean> check(@NotNull GameProfile profile, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
-        return check(profile, permission, PermissionLevel.fromLevel(MathHelper.clamp(defaultRequiredLevel, 0, PermissionLevel.OWNERS.getLevel())), server);
+        return check(profile, permission, Util.permissionLevelFromInt(defaultRequiredLevel), server);
     }
 
     /**
@@ -367,9 +375,11 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @param server instance to check permission level
      * @return the result of the permission check
+     * @deprecated use {@link #check(PlayerConfigEntry, String, PermissionLevel, MinecraftServer)} instead
      */
+    @Deprecated
     static CompletableFuture<Boolean> check(@NotNull PlayerConfigEntry entry, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
-        return check(entry, permission, PermissionLevel.fromLevel(MathHelper.clamp(defaultRequiredLevel, 0, PermissionLevel.OWNERS.getLevel())), server);
+        return check(entry, permission, Util.permissionLevelFromInt(defaultRequiredLevel), server);
     }
 
     /**

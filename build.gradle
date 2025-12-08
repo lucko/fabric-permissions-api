@@ -7,6 +7,7 @@ plugins {
 
 repositories {
     maven { url 'https://maven.fabricmc.net/' }
+    maven { url 'https://libraries.minecraft.net/' }
 }
 
 def minecraftVersion = '1.21.11-pre3'
