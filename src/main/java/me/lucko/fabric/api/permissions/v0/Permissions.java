@@ -28,7 +28,8 @@ package me.lucko.fabric.api.permissions.v0;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.PermissionLevelSource;
+import net.minecraft.command.permission.Permission;
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerConfigEntry;
@@ -80,12 +81,24 @@ public interface Permissions {
      * @param permission the permission to check
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
+     * @deprecated use {@link #check(CommandSource, String, PermissionLevel)} instead
      */
+    @Deprecated
     static boolean check(@NotNull CommandSource source, @NotNull String permission, int defaultRequiredLevel) {
-        return getPermissionValue(source, permission).orElseGet(() -> source instanceof PermissionLevelSource permissionSource
-                ? permissionSource.hasPermissionLevel(defaultRequiredLevel)
-                : defaultRequiredLevel == 0
-        );
+        return check(source, permission, Util.permissionLevelFromInt(defaultRequiredLevel));
+    }
+
+    /**
+     * Performs a permission check, falling back to requiring the {@code defaultRequiredLevel}
+     * if the resultant state is {@link TriState#DEFAULT}.
+     *
+     * @param source the source to perform the check for
+     * @param permission the permission to check
+     * @param defaultRequiredLevel the required permission level to check for as a fallback
+     * @return the result of the permission check
+     */
+    static boolean check(@NotNull CommandSource source, @NotNull String permission, @NotNull PermissionLevel defaultRequiredLevel) {
+        return getPermissionValue(source, permission).orElseGet(() -> source.getPermissions().hasPermission(new Permission.Level(defaultRequiredLevel)));
     }
 
     /**
@@ -121,9 +134,27 @@ public interface Permissions {
      * @param permission the permission to check
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return a predicate that will perform the permission check
+     * @deprecated use {@link #require(String, PermissionLevel)} instead
      */
+    @Deprecated
     static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, int defaultRequiredLevel) {
         Objects.requireNonNull(permission, "permission");
+        PermissionLevel level = Util.permissionLevelFromInt(defaultRequiredLevel);
+        return player -> check(player, permission, level);
+    }
+
+    /**
+     * Creates a predicate which returns the result of performing a permission check,
+     * falling back to requiring the {@code defaultRequiredLevel} if the resultant state is
+     * {@link TriState#DEFAULT}.
+     *
+     * @param permission the permission to check
+     * @param defaultRequiredLevel the required permission level to check for as a fallback
+     * @return a predicate that will perform the permission check
+     */
+    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, PermissionLevel defaultRequiredLevel) {
+        Objects.requireNonNull(permission, "permission");
+        Objects.requireNonNull(defaultRequiredLevel, "defaultRequiredLevel");
         return player -> check(player, permission, defaultRequiredLevel);
     }
 
@@ -173,9 +204,26 @@ public interface Permissions {
      * @param permission the permission to check
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
+     * @deprecated use {@link #check(Entity, String, PermissionLevel)} instead
      */
+    @Deprecated
     static boolean check(@NotNull Entity entity, @NotNull String permission, int defaultRequiredLevel) {
         Objects.requireNonNull(entity, "entity");
+        return check(Util.commandSourceFromEntity(entity), permission, defaultRequiredLevel);
+    }
+
+    /**
+     * Performs a permission check, falling back to requiring the {@code defaultRequiredLevel}
+     * if the resultant state is {@link TriState#DEFAULT}.
+     *
+     * @param entity the entity to perform the check for
+     * @param permission the permission to check
+     * @param defaultRequiredLevel the required permission level to check for as a fallback
+     * @return the result of the permission check
+     */
+    static boolean check(@NotNull Entity entity, @NotNull String permission, PermissionLevel defaultRequiredLevel) {
+        Objects.requireNonNull(entity, "entity");
+        Objects.requireNonNull(defaultRequiredLevel, "permissionLevel");
         return check(Util.commandSourceFromEntity(entity), permission, defaultRequiredLevel);
     }
 
@@ -266,11 +314,28 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @param server instance to check permission level
      * @return the result of the permission check
+     * @deprecated use {@link #check(GameProfile, String, PermissionLevel, MinecraftServer)} instead
      */
+    @Deprecated
     static CompletableFuture<Boolean> check(@NotNull GameProfile profile, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
+        return check(profile, permission, Util.permissionLevelFromInt(defaultRequiredLevel), server);
+    }
+
+    /**
+     * Performs a permission check, falling back to requiring the {@code defaultRequiredLevel}
+     * if the resultant state is {@link TriState#DEFAULT}.
+     *
+     * @param profile the player profile to perform the check for
+     * @param permission the permission to check
+     * @param defaultRequiredLevel the required permission level to check for as a fallback
+     * @param server instance to check permission level
+     * @return the result of the permission check
+     */
+    static CompletableFuture<Boolean> check(@NotNull GameProfile profile, @NotNull String permission, @NotNull PermissionLevel defaultRequiredLevel, @NotNull MinecraftServer server) {
         Objects.requireNonNull(profile, "profile");
+        Objects.requireNonNull(defaultRequiredLevel, "defaultRequiredLevel");
         Objects.requireNonNull(server, "server");
-        BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(new PlayerConfigEntry(profile)) >= defaultRequiredLevel;
+        BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(new PlayerConfigEntry(profile)).getLevel().isAtLeast(defaultRequiredLevel);
         return getPermissionValue(profile.id(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
     }
     
@@ -310,11 +375,28 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @param server instance to check permission level
      * @return the result of the permission check
+     * @deprecated use {@link #check(PlayerConfigEntry, String, PermissionLevel, MinecraftServer)} instead
      */
+    @Deprecated
     static CompletableFuture<Boolean> check(@NotNull PlayerConfigEntry entry, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
+        return check(entry, permission, Util.permissionLevelFromInt(defaultRequiredLevel), server);
+    }
+
+    /**
+     * Performs a permission check, falling back to requiring the {@code defaultRequiredLevel}
+     * if the resultant state is {@link TriState#DEFAULT}.
+     *
+     * @param entry the player config entry to perform the check for
+     * @param permission the permission to check
+     * @param defaultRequiredLevel the required permission level to check for as a fallback
+     * @param server instance to check permission level
+     * @return the result of the permission check
+     */
+    static CompletableFuture<Boolean> check(@NotNull PlayerConfigEntry entry, @NotNull String permission, PermissionLevel defaultRequiredLevel, @NotNull MinecraftServer server) {
         Objects.requireNonNull(entry, "entry");
+        Objects.requireNonNull(defaultRequiredLevel, "defaultRequiredLevel");
         Objects.requireNonNull(server, "server");
-        BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(entry) >= defaultRequiredLevel;
+        BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(entry).getLevel().isAtLeast(defaultRequiredLevel);
         return getPermissionValue(entry.id(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
     }
     
