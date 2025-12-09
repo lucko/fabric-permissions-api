@@ -11,7 +11,7 @@ def loaderVersion = '0.18.2'
 def fabricApiVersion = '0.139.4+1.21.11'
 
 group = 'me.lucko'
-version = '0.6.0-SNAPSHOT'
+version = '0.6.0'
 description = 'A simple permissions API for Fabric'
 
 dependencies {
