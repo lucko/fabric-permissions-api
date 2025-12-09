@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.14-SNAPSHOT'
+    id 'fabric-loom' version '1.13-SNAPSHOT'
     id 'maven-publish'
     id 'net.kyori.indra.publishing.sonatype' version '4.0.0'
     id 'net.kyori.indra.publishing' version '4.0.0'
@@ -11,7 +11,7 @@ def loaderVersion = '0.18.2'
 def fabricApiVersion = '0.139.4+1.21.11'
 
 group = 'me.lucko'
-version = '0.6.0'
+version = '0.6.1'
 description = 'A simple permissions API for Fabric'
 
 dependencies {
