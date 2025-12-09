@@ -10,18 +10,22 @@ repositories {
 
 dependencies {
     // Approach #1: Ensure fabric-permissions-api is always available by including it within your own jar (it's only ~12KB!)
-    include(modImplementation('me.lucko:fabric-permissions-api:0.5.0'))
+    include(modImplementation('me.lucko:fabric-permissions-api:{VERSION}'))
     
     // Approach #2: Depend on fabric-permissions-api, but require that users install it themselves
-    modImplementation 'me.lucko:fabric-permissions-api:0.5.0'
+    modImplementation 'me.lucko:fabric-permissions-api:{VERSION}'
 }
 ```
 
-> [!NOTE]
-> fabric-permissions-api v0.5.0 requires Minecraft 1.21.9 or later. Use v0.4.0 for earlier Minecraft versions.
-> fabric-permissions-api v0.4.0 requires Minecraft 1.21.6 or later. Use v0.3.3 for earlier Minecraft versions.
-
 Then depend on `"fabric-permissions-api-v0": "*"` in your fabric.mod.json.
+
+### Version Matrix
+| Minecraft version | fabric-permission-api version |
+|-------------------|-------------------------------|
+| 1.21.11 or later  | `0.6.0`                       |
+| 1.21.9 to 1.21.10 | `0.5.0`                       |
+| 1.21.6 to 1.21.8  | `0.4.0`                       |
+| 1.21.5 or earlier | `0.3.3`                       |
 
 ## Usage (checking permissions)
 
