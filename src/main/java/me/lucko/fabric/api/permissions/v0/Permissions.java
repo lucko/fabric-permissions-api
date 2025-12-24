@@ -27,13 +27,13 @@ package me.lucko.fabric.api.permissions.v0;
 
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.permission.Permission;
-import net.minecraft.command.permission.PermissionLevel;
-import net.minecraft.entity.Entity;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerConfigEntry;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.players.NameAndId;
+import net.minecraft.commands.CommandSourceStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -54,7 +54,7 @@ public interface Permissions {
      * @param permission the permission
      * @return the state of the permission
      */
-    static @NotNull TriState getPermissionValue(@NotNull CommandSource source, @NotNull String permission) {
+    static @NotNull TriState getPermissionValue(@NotNull SharedSuggestionProvider source, @NotNull String permission) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(permission, "permission");
         return PermissionCheckEvent.EVENT.invoker().onPermissionCheck(source, permission);
@@ -69,7 +69,7 @@ public interface Permissions {
      * @param defaultValue the default value to use if nothing has been set
      * @return the result of the permission check
      */
-    static boolean check(@NotNull CommandSource source, @NotNull String permission, boolean defaultValue) {
+    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission, boolean defaultValue) {
         return getPermissionValue(source, permission).orElse(defaultValue);
     }
 
@@ -81,10 +81,10 @@ public interface Permissions {
      * @param permission the permission to check
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
-     * @deprecated use {@link #check(CommandSource, String, PermissionLevel)} instead
+     * @deprecated use {@link #check(SharedSuggestionProvider, String, PermissionLevel)} instead
      */
     @Deprecated
-    static boolean check(@NotNull CommandSource source, @NotNull String permission, int defaultRequiredLevel) {
+    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission, int defaultRequiredLevel) {
         return check(source, permission, Util.permissionLevelFromInt(defaultRequiredLevel));
     }
 
@@ -97,8 +97,8 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
      */
-    static boolean check(@NotNull CommandSource source, @NotNull String permission, @NotNull PermissionLevel defaultRequiredLevel) {
-        return getPermissionValue(source, permission).orElseGet(() -> source.getPermissions().hasPermission(new Permission.Level(defaultRequiredLevel)));
+    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission, @NotNull PermissionLevel defaultRequiredLevel) {
+        return getPermissionValue(source, permission).orElseGet(() -> source.permissions().hasPermission(new Permission.HasCommandLevel(defaultRequiredLevel)));
     }
 
     /**
@@ -109,7 +109,7 @@ public interface Permissions {
      * @param permission the permission to check
      * @return the result of the permission check
      */
-    static boolean check(@NotNull CommandSource source, @NotNull String permission) {
+    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission) {
         return getPermissionValue(source, permission).orElse(false);
     }
 
@@ -121,7 +121,7 @@ public interface Permissions {
      * @param defaultValue the default value to use if nothing has been set
      * @return a predicate that will perform the permission check
      */
-    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, boolean defaultValue) {
+    static @NotNull Predicate<CommandSourceStack> require(@NotNull String permission, boolean defaultValue) {
         Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission, defaultValue);
     }
@@ -137,7 +137,7 @@ public interface Permissions {
      * @deprecated use {@link #require(String, PermissionLevel)} instead
      */
     @Deprecated
-    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, int defaultRequiredLevel) {
+    static @NotNull Predicate<CommandSourceStack> require(@NotNull String permission, int defaultRequiredLevel) {
         Objects.requireNonNull(permission, "permission");
         PermissionLevel level = Util.permissionLevelFromInt(defaultRequiredLevel);
         return player -> check(player, permission, level);
@@ -152,7 +152,7 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return a predicate that will perform the permission check
      */
-    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission, PermissionLevel defaultRequiredLevel) {
+    static @NotNull Predicate<CommandSourceStack> require(@NotNull String permission, PermissionLevel defaultRequiredLevel) {
         Objects.requireNonNull(permission, "permission");
         Objects.requireNonNull(defaultRequiredLevel, "defaultRequiredLevel");
         return player -> check(player, permission, defaultRequiredLevel);
@@ -165,7 +165,7 @@ public interface Permissions {
      * @param permission the permission to check
      * @return a predicate that will perform the permission check
      */
-    static @NotNull Predicate<ServerCommandSource> require(@NotNull String permission) {
+    static @NotNull Predicate<CommandSourceStack> require(@NotNull String permission) {
         Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission);
     }
@@ -335,7 +335,7 @@ public interface Permissions {
         Objects.requireNonNull(profile, "profile");
         Objects.requireNonNull(defaultRequiredLevel, "defaultRequiredLevel");
         Objects.requireNonNull(server, "server");
-        BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(new PlayerConfigEntry(profile)).getLevel().isAtLeast(defaultRequiredLevel);
+        BooleanSupplier permissionLevelCheck = () -> server.getProfilePermissions(new NameAndId(profile)).level().isEqualOrHigherThan(defaultRequiredLevel);
         return getPermissionValue(profile.id(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
     }
     
@@ -348,7 +348,7 @@ public interface Permissions {
      * @param defaultValue the default value to use if nothing has been set
      * @return the result of the permission check
      */
-    static CompletableFuture<Boolean> check(@NotNull PlayerConfigEntry entry, @NotNull String permission, boolean defaultValue) {
+    static CompletableFuture<Boolean> check(@NotNull NameAndId entry, @NotNull String permission, boolean defaultValue) {
         Objects.requireNonNull(entry, "entry");
         return check(entry.id(), permission, defaultValue);
     }
@@ -361,7 +361,7 @@ public interface Permissions {
      * @param permission the permission to check
      * @return the result of the permission check
      */
-    static CompletableFuture<Boolean> check(@NotNull PlayerConfigEntry entry, @NotNull String permission) {
+    static CompletableFuture<Boolean> check(@NotNull NameAndId entry, @NotNull String permission) {
         Objects.requireNonNull(entry, "entry");
         return check(entry.id(), permission);
     }
@@ -375,10 +375,10 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @param server instance to check permission level
      * @return the result of the permission check
-     * @deprecated use {@link #check(PlayerConfigEntry, String, PermissionLevel, MinecraftServer)} instead
+     * @deprecated use {@link #check(NameAndId, String, PermissionLevel, MinecraftServer)} instead
      */
     @Deprecated
-    static CompletableFuture<Boolean> check(@NotNull PlayerConfigEntry entry, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
+    static CompletableFuture<Boolean> check(@NotNull NameAndId entry, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
         return check(entry, permission, Util.permissionLevelFromInt(defaultRequiredLevel), server);
     }
 
@@ -392,11 +392,11 @@ public interface Permissions {
      * @param server instance to check permission level
      * @return the result of the permission check
      */
-    static CompletableFuture<Boolean> check(@NotNull PlayerConfigEntry entry, @NotNull String permission, PermissionLevel defaultRequiredLevel, @NotNull MinecraftServer server) {
+    static CompletableFuture<Boolean> check(@NotNull NameAndId entry, @NotNull String permission, PermissionLevel defaultRequiredLevel, @NotNull MinecraftServer server) {
         Objects.requireNonNull(entry, "entry");
         Objects.requireNonNull(defaultRequiredLevel, "defaultRequiredLevel");
         Objects.requireNonNull(server, "server");
-        BooleanSupplier permissionLevelCheck = () -> server.getPermissionLevel(entry).getLevel().isAtLeast(defaultRequiredLevel);
+        BooleanSupplier permissionLevelCheck = () -> server.getProfilePermissions(entry).level().isEqualOrHigherThan(defaultRequiredLevel);
         return getPermissionValue(entry.id(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
     }
     

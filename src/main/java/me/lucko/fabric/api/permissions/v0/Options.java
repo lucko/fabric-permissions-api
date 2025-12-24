@@ -26,9 +26,9 @@
 package me.lucko.fabric.api.permissions.v0;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.Entity;
-import net.minecraft.server.PlayerConfigEntry;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.server.players.NameAndId;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +50,7 @@ public interface Options {
      * @param key the option key
      * @return the option value
      */
-    static @NotNull Optional<String> get(@NotNull CommandSource source, @NotNull String key) {
+    static @NotNull Optional<String> get(@NotNull SharedSuggestionProvider source, @NotNull String key) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(key, "key");
         return OptionRequestEvent.EVENT.invoker().onOptionRequest(source, key);
@@ -66,7 +66,7 @@ public interface Options {
      * @return the option value
      */
     @Contract("_, _, !null -> !null")
-    static String get(@NotNull CommandSource source, @NotNull String key, String defaultValue) {
+    static String get(@NotNull SharedSuggestionProvider source, @NotNull String key, String defaultValue) {
         return get(source, key).orElse(defaultValue);
     }
 
@@ -90,7 +90,7 @@ public interface Options {
      * @param <T> the type of the transformed result
      * @return the transformed option value
      */
-    static <T> @NotNull Optional<T> get(@NotNull CommandSource source, @NotNull String key, @NotNull Function<String, ? extends T> valueTransformer) {
+    static <T> @NotNull Optional<T> get(@NotNull SharedSuggestionProvider source, @NotNull String key, @NotNull Function<String, ? extends T> valueTransformer) {
         return get(source, key).flatMap(value -> {
             try {
                 return Optional.ofNullable(valueTransformer.apply(value));
@@ -123,7 +123,7 @@ public interface Options {
      * @return the transformed option value
      */
     @Contract("_, _, !null, _ -> !null")
-    static <T> T get(@NotNull CommandSource source, @NotNull String key, T defaultValue, @NotNull Function<String, ? extends T> valueTransformer) {
+    static <T> T get(@NotNull SharedSuggestionProvider source, @NotNull String key, T defaultValue, @NotNull Function<String, ? extends T> valueTransformer) {
         return Options.<T>get(source, key, valueTransformer).orElse(defaultValue);
     }
 
@@ -379,7 +379,7 @@ public interface Options {
      * @param key the option key
      * @return the option value
      */
-    static @NotNull CompletableFuture<Optional<String>> get(@NotNull PlayerConfigEntry entry, @NotNull String key) {
+    static @NotNull CompletableFuture<Optional<String>> get(@NotNull NameAndId entry, @NotNull String key) {
         Objects.requireNonNull(entry, "entry");
         return get(entry.id(), key);
     }
@@ -394,7 +394,7 @@ public interface Options {
      * @return the option value
      */
     @Contract("_, _, !null -> !null")
-    static CompletableFuture<String> get(@NotNull PlayerConfigEntry entry, @NotNull String key, String defaultValue) {
+    static CompletableFuture<String> get(@NotNull NameAndId entry, @NotNull String key, String defaultValue) {
         Objects.requireNonNull(entry, "entry");
         return get(entry.id(), key, defaultValue);
     }
@@ -419,7 +419,7 @@ public interface Options {
      * @param <T> the type of the transformed result
      * @return the transformed option value
      */
-    static <T> @NotNull CompletableFuture<Optional<T>> get(@NotNull PlayerConfigEntry entry, @NotNull String key, @NotNull Function<String, ? extends T> valueTransformer) {
+    static <T> @NotNull CompletableFuture<Optional<T>> get(@NotNull NameAndId entry, @NotNull String key, @NotNull Function<String, ? extends T> valueTransformer) {
         Objects.requireNonNull(entry, "entry");
         return get(entry.id(), key, valueTransformer);
     }
@@ -447,7 +447,7 @@ public interface Options {
      * @return the transformed option value
      */
     @Contract("_, _, !null, _ -> !null")
-    static <T> CompletableFuture<T> get(@NotNull PlayerConfigEntry entry, @NotNull String key, T defaultValue, @NotNull Function<String, ? extends T> valueTransformer) {
+    static <T> CompletableFuture<T> get(@NotNull NameAndId entry, @NotNull String key, T defaultValue, @NotNull Function<String, ? extends T> valueTransformer) {
         Objects.requireNonNull(entry, "entry");
         return get(entry.id(), key, defaultValue, valueTransformer);
     }
