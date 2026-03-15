@@ -1,25 +1,21 @@
 plugins {
     id 'net.fabricmc.fabric-loom' version '1.15.+'
     id 'maven-publish'
-//    id 'net.kyori.indra.publishing.sonatype' version '4.0.0'
-//    id 'net.kyori.indra.publishing' version '4.0.0'
+    id 'net.kyori.indra.publishing.sonatype' version '4.0.0'
+    id 'net.kyori.indra.publishing' version '4.0.0'
 }
 
 def minecraftVersion = '26.1-pre-2'
-// def yarnBuild = 1
 def loaderVersion = '0.18.4'
 def fabricApiVersion = '0.143.13+26.1'
 
 group = 'me.lucko'
-version = '0.6.3-sakura'
+version = '0.6.3-SNAPSHOT'
 description = 'A simple permissions API for Fabric'
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
-    // mappings "net.fabricmc:yarn:${minecraftVersion}+build.${yarnBuild}:v2"
     implementation "net.fabricmc:fabric-loader:${loaderVersion}"
-//    implementation "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}"
-//    implementation "net.fabricmc.fabric-api:fabric-api-base:1.0.6+9c919dacc9"
     implementation fabricApi.module("fabric-api-base", fabricApiVersion)
 }
 
@@ -46,45 +42,27 @@ tasks.withType(JavaCompile).configureEach {
     options.release = 25
 }
 
-//indra {
-//    github("lucko", "fabric-permissions-api") {
-//        ci(true)
-//    }
-//    mitLicense()
-//    configurePublications {
-//        from components.java
-//        pom {
-//            developers {
-//                developer {
-//                    id = 'Luck'
-//                    url = 'https://lucko.me'
-//                }
-//            }
-//            withXml {
-//                def root = asNode()
-//                // maven central is sad about fabric's dependencies in the pom
-//                root.remove(root.get('dependencies'))
-//                root.remove(root.get('dependencyManagement'))
-//            }
-//        }
-//    }
-//    signWithKeyFromProperties("signingKey", "signingPassword")
-//}
-
-tasks.publish.dependsOn build
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            //artifact(jar)             { builtBy remapJar }
-            artifactId = base.archivesName.get()
-            from components.java
+indra {
+    github("lucko", "fabric-permissions-api") {
+        ci(true)
+    }
+    mitLicense()
+    configurePublications {
+        from components.java
+        pom {
+            developers {
+                developer {
+                    id = 'Luck'
+                    url = 'https://lucko.me'
+                }
+            }
+            withXml {
+                def root = asNode()
+                // maven central is sad about fabric's dependencies in the pom
+                root.remove(root.get('dependencies'))
+                root.remove(root.get('dependencyManagement'))
+            }
         }
     }
-
-    repositories {
-        maven {
-            url = "$projectDir/../../CommonMaven"
-        }
-    }
+    signWithKeyFromProperties("signingKey", "signingPassword")
 }
