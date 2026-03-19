@@ -5,9 +5,9 @@ plugins {
     id 'net.kyori.indra.publishing' version '4.0.0'
 }
 
-def minecraftVersion = '26.1-pre-2'
+def minecraftVersion = '26.1-rc-1'
 def loaderVersion = '0.18.4'
-def fabricApiVersion = '0.143.13+26.1'
+def fabricApiVersion = '0.143.14+26.1'
 
 group = 'me.lucko'
 version = '0.6.3-SNAPSHOT'
