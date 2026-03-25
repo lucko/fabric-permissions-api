@@ -15,8 +15,8 @@ description = 'A simple permissions API for Fabric'
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
-    implementation "net.fabricmc:fabric-loader:${loaderVersion}"
-    implementation fabricApi.module("fabric-api-base", fabricApiVersion)
+    compileOnly "net.fabricmc:fabric-loader:${loaderVersion}"
+    compileOnly fabricApi.module("fabric-api-base", fabricApiVersion)
 }
 
 processResources {
@@ -55,12 +55,6 @@ indra {
                     id = 'Luck'
                     url = 'https://lucko.me'
                 }
-            }
-            withXml {
-                def root = asNode()
-                // maven central is sad about fabric's dependencies in the pom
-                root.remove(root.get('dependencies'))
-                root.remove(root.get('dependencyManagement'))
             }
         }
     }

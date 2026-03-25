@@ -22,7 +22,8 @@ Then depend on `"fabric-permissions-api-v0": "*"` in your fabric.mod.json.
 ### Version Matrix
 | Minecraft version | fabric-permission-api version |
 |-------------------|-------------------------------|
-| 1.21.11 or later  | `0.6.1`                       |
+| 26.1              | `0.7.0`                       |
+| 1.21.11           | `0.6.1`                       |
 | 1.21.9 to 1.21.10 | `0.5.0`                       |
 | 1.21.6 to 1.21.8  | `0.4.0`                       |
 | 1.21.5 or earlier | `0.3.3`                       |
@@ -32,19 +33,19 @@ Then depend on `"fabric-permissions-api-v0": "*"` in your fabric.mod.json.
 All the methods you need to check for permissions are in the `Permissions` class.
 
 #### Checking permissions for an `Entity`
-This of course includes all subtypes, most notably `ServerPlayerEntity`.
+This of course includes all subtypes, most notably `ServerPlayer`.
 
 ```java
-ServerPlayerEntity player = ...;
+ServerPlayer player = ...;
 if (Permissions.check(player, "mymod.permission")) {
     // Woo!
 }
 ```
 
-#### Checking permissions for a `CommandSource`
+#### Checking permissions for a `CommandSourceStack`
 
 ```java
-CommandSource source = ...;
+CommandSourceStack source = ...;
 if (Permissions.check(source, "mymod.permission")) {
     // Woo!
 }
@@ -102,17 +103,17 @@ if (Permissions.check(uuid, "mymod.permission").join()) {
 All the methods you need to get option values are in the `Options` class.
 
 #### Getting options for an `Entity`
-This of course includes all subtypes, most notably `ServerPlayerEntity`.
+This of course includes all subtypes, most notably `ServerPlayer`.
 
 ```java
-ServerPlayerEntity player = ...;
+ServerPlayer player = ...;
 Optional<String> value = Options.get(player, "prefix");
 ```
 
-#### Getting options for a `CommandSource`
+#### Getting options for a `CommandSourceStack`
 
 ```java
-CommandSource source = ...;
+CommandSourceStack source = ...;
 Optional<String> value = Options.get(source, "prefix");
 ```
 
