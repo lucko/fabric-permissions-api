@@ -25,30 +25,30 @@
 
 package me.lucko.fabric.api.permissions.v0;
 
-import net.minecraft.command.permission.PermissionLevel;
-import net.minecraft.entity.Entity;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.server.permissions.PermissionLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 
 class Util {
 
-    static ServerCommandSource commandSourceFromEntity(Entity entity) {
-        if (entity instanceof ServerPlayerEntity) {
-            return ((ServerPlayerEntity) entity).getCommandSource();
+    static CommandSourceStack commandSourceFromEntity(Entity entity) {
+        if (entity instanceof ServerPlayer) {
+            return ((ServerPlayer) entity).createCommandSourceStack();
         }
-        World world = entity.getEntityWorld();
-        if (world instanceof ServerWorld) {
-            return entity.getCommandSource((ServerWorld) world);
+        Level world = entity.level();
+        if (world instanceof ServerLevel) {
+            return entity.createCommandSourceStackForNameResolution((ServerLevel) world);
         } else {
             throw new IllegalArgumentException("Entity '" + entity + "' is not a server entity. Try passing a CommandSource directly instead.");
         }
     }
 
     static PermissionLevel permissionLevelFromInt(int level) {
-        return PermissionLevel.fromLevel(MathHelper.clamp(level, 0, PermissionLevel.OWNERS.getLevel()));
+        return PermissionLevel.byId(Mth.clamp(level, 0, PermissionLevel.OWNERS.id()));
     }
 
 }
