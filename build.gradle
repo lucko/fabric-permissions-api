@@ -1,16 +1,16 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.15.+'
+    id 'net.fabricmc.fabric-loom' version '1.15-SNAPSHOT'
     id 'maven-publish'
     id 'net.kyori.indra.publishing.sonatype' version '4.0.0'
     id 'net.kyori.indra.publishing' version '4.0.0'
 }
 
-def minecraftVersion = '26.1-rc-1'
+def minecraftVersion = '26.1'
 def loaderVersion = '0.18.4'
-def fabricApiVersion = '0.143.14+26.1'
+def fabricApiVersion = '0.144.0+26.1'
 
 group = 'me.lucko'
-version = '0.6.3-SNAPSHOT'
+version = '0.7.0-SNAPSHOT'
 description = 'A simple permissions API for Fabric'
 
 dependencies {
