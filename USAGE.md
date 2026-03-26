@@ -18,7 +18,7 @@ dependencies {
 ```
 
 > [!IMPORTANT]
-> In 26.1, use `implementation` istead of `modImplementation`
+> As of 26.1, use `implementation` instead of `modImplementation`
 > <https://docs.fabricmc.net/26.1/develop/porting/>
 
 Then depend on `"fabric-permissions-api-v0": "*"` in your fabric.mod.json.
