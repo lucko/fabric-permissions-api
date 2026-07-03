@@ -27,6 +27,8 @@ Then depend on `"fabric-permissions-api-v0": "*"` in your fabric.mod.json.
 | 1.21.9 to 1.21.10 | `0.5.0`                       |
 | 1.21.6 to 1.21.8  | `0.4.0`                       |
 | 1.21.5 or earlier | `0.3.3`                       |
+| 1.21.2 to 1.21.4  | `0.3.2`                       |
+| 1.21 to 1.21.1    | `0.3.1`                       |
 
 ## Usage (checking permissions)
 
