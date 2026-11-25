@@ -26,9 +26,10 @@
 package me.lucko.fabric.api.permissions.v0;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.server.players.NameAndId;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +51,7 @@ public interface Options {
      * @param key the option key
      * @return the option value
      */
-    static @NotNull Optional<String> get(@NotNull SharedSuggestionProvider source, @NotNull String key) {
+    static @NotNull Optional<String> get(@NotNull CommandSourceStack source, @NotNull String key) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(key, "key");
         return OptionRequestEvent.EVENT.invoker().onOptionRequest(source, key);
@@ -66,7 +67,7 @@ public interface Options {
      * @return the option value
      */
     @Contract("_, _, !null -> !null")
-    static String get(@NotNull SharedSuggestionProvider source, @NotNull String key, String defaultValue) {
+    static String get(@NotNull CommandSourceStack source, @NotNull String key, String defaultValue) {
         return get(source, key).orElse(defaultValue);
     }
 
@@ -90,7 +91,7 @@ public interface Options {
      * @param <T> the type of the transformed result
      * @return the transformed option value
      */
-    static <T> @NotNull Optional<T> get(@NotNull SharedSuggestionProvider source, @NotNull String key, @NotNull Function<String, ? extends T> valueTransformer) {
+    static <T> @NotNull Optional<T> get(@NotNull CommandSourceStack source, @NotNull String key, @NotNull Function<String, ? extends T> valueTransformer) {
         return get(source, key).flatMap(value -> {
             try {
                 return Optional.ofNullable(valueTransformer.apply(value));
@@ -123,7 +124,7 @@ public interface Options {
      * @return the transformed option value
      */
     @Contract("_, _, !null, _ -> !null")
-    static <T> T get(@NotNull SharedSuggestionProvider source, @NotNull String key, T defaultValue, @NotNull Function<String, ? extends T> valueTransformer) {
+    static <T> T get(@NotNull CommandSourceStack source, @NotNull String key, T defaultValue, @NotNull Function<String, ? extends T> valueTransformer) {
         return Options.<T>get(source, key, valueTransformer).orElse(defaultValue);
     }
 
@@ -451,4 +452,46 @@ public interface Options {
         Objects.requireNonNull(entry, "entry");
         return get(entry.id(), key, defaultValue, valueTransformer);
     }
+
+    // Compat for changes in 0.7.1 where SharedSuggestionProvider args were replaced with CommandSourceStack args.
+    // These methods will be removed in a future version.
+
+    @Deprecated(forRemoval = true)
+    static @NotNull Optional<String> get(@NotNull SharedSuggestionProvider source, @NotNull String key) {
+        if (source instanceof CommandSourceStack stack) {
+            return get(stack, key);
+        } else {
+            throw new IllegalArgumentException("Source '" + source + "' is not a CommandSourceStack.");
+        }
+    }
+
+    @Deprecated(forRemoval = true)
+    @Contract("_, _, !null -> !null")
+    static String get(@NotNull SharedSuggestionProvider source, @NotNull String key, String defaultValue) {
+        if (source instanceof CommandSourceStack stack) {
+            return get(stack, key, defaultValue);
+        } else {
+            throw new IllegalArgumentException("Source '" + source + "' is not a CommandSourceStack.");
+        }
+    }
+
+    @Deprecated(forRemoval = true)
+    static <T> @NotNull Optional<T> get(@NotNull SharedSuggestionProvider source, @NotNull String key, @NotNull Function<String, ? extends T> valueTransformer) {
+        if (source instanceof CommandSourceStack stack) {
+            return get(stack, key, valueTransformer);
+        } else {
+            throw new IllegalArgumentException("Source '" + source + "' is not a CommandSourceStack.");
+        }
+    }
+
+    @Deprecated(forRemoval = true)
+    @Contract("_, _, !null, _ -> !null")
+    static <T> T get(@NotNull SharedSuggestionProvider source, @NotNull String key, T defaultValue, @NotNull Function<String, ? extends T> valueTransformer) {
+        if (source instanceof CommandSourceStack stack) {
+            return get(stack, key, defaultValue, valueTransformer);
+        } else {
+            throw new IllegalArgumentException("Source '" + source + "' is not a CommandSourceStack.");
+        }
+    }
+
 }

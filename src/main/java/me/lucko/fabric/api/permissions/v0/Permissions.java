@@ -27,13 +27,13 @@ package me.lucko.fabric.api.permissions.v0;
 
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.PermissionLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.NameAndId;
-import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -54,7 +54,7 @@ public interface Permissions {
      * @param permission the permission
      * @return the state of the permission
      */
-    static @NotNull TriState getPermissionValue(@NotNull SharedSuggestionProvider source, @NotNull String permission) {
+    static @NotNull TriState getPermissionValue(@NotNull CommandSourceStack source, @NotNull String permission) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(permission, "permission");
         return PermissionCheckEvent.EVENT.invoker().onPermissionCheck(source, permission);
@@ -69,7 +69,7 @@ public interface Permissions {
      * @param defaultValue the default value to use if nothing has been set
      * @return the result of the permission check
      */
-    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission, boolean defaultValue) {
+    static boolean check(@NotNull CommandSourceStack source, @NotNull String permission, boolean defaultValue) {
         return getPermissionValue(source, permission).orElse(defaultValue);
     }
 
@@ -81,10 +81,10 @@ public interface Permissions {
      * @param permission the permission to check
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
-     * @deprecated use {@link #check(SharedSuggestionProvider, String, PermissionLevel)} instead
+     * @deprecated use {@link #check(CommandSourceStack, String, PermissionLevel)} instead
      */
-    @Deprecated
-    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission, int defaultRequiredLevel) {
+    @Deprecated(forRemoval = true)
+    static boolean check(@NotNull CommandSourceStack source, @NotNull String permission, int defaultRequiredLevel) {
         return check(source, permission, Util.permissionLevelFromInt(defaultRequiredLevel));
     }
 
@@ -97,7 +97,7 @@ public interface Permissions {
      * @param defaultRequiredLevel the required permission level to check for as a fallback
      * @return the result of the permission check
      */
-    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission, @NotNull PermissionLevel defaultRequiredLevel) {
+    static boolean check(@NotNull CommandSourceStack source, @NotNull String permission, @NotNull PermissionLevel defaultRequiredLevel) {
         return getPermissionValue(source, permission).orElseGet(() -> source.permissions().hasPermission(new Permission.HasCommandLevel(defaultRequiredLevel)));
     }
 
@@ -109,7 +109,7 @@ public interface Permissions {
      * @param permission the permission to check
      * @return the result of the permission check
      */
-    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission) {
+    static boolean check(@NotNull CommandSourceStack source, @NotNull String permission) {
         return getPermissionValue(source, permission).orElse(false);
     }
 
@@ -136,7 +136,7 @@ public interface Permissions {
      * @return a predicate that will perform the permission check
      * @deprecated use {@link #require(String, PermissionLevel)} instead
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     static @NotNull Predicate<CommandSourceStack> require(@NotNull String permission, int defaultRequiredLevel) {
         Objects.requireNonNull(permission, "permission");
         PermissionLevel level = Util.permissionLevelFromInt(defaultRequiredLevel);
@@ -377,7 +377,7 @@ public interface Permissions {
      * @return the result of the permission check
      * @deprecated use {@link #check(NameAndId, String, PermissionLevel, MinecraftServer)} instead
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     static CompletableFuture<Boolean> check(@NotNull NameAndId entry, @NotNull String permission, int defaultRequiredLevel, @NotNull MinecraftServer server) {
         return check(entry, permission, Util.permissionLevelFromInt(defaultRequiredLevel), server);
     }
@@ -398,6 +398,54 @@ public interface Permissions {
         Objects.requireNonNull(server, "server");
         BooleanSupplier permissionLevelCheck = () -> server.getProfilePermissions(entry).level().isEqualOrHigherThan(defaultRequiredLevel);
         return getPermissionValue(entry.id(), permission).thenApplyAsync(state -> state.orElseGet(permissionLevelCheck));
+    }
+
+    // Compat for changes in 0.7.1 where SharedSuggestionProvider args were replaced with CommandSourceStack args.
+    // These methods will be removed in a future version.
+
+    @Deprecated(forRemoval = true)
+    static @NotNull TriState getPermissionValue(@NotNull SharedSuggestionProvider source, @NotNull String permission) {
+        if (source instanceof CommandSourceStack stack) {
+            return getPermissionValue(stack, permission);
+        } else {
+            throw new IllegalArgumentException("Source '" + source + "' is not a CommandSourceStack.");
+        }
+    }
+
+    @Deprecated(forRemoval = true)
+    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission, boolean defaultValue) {
+        if (source instanceof CommandSourceStack stack) {
+            return check(stack, permission, defaultValue);
+        } else {
+            throw new IllegalArgumentException("Source '" + source + "' is not a CommandSourceStack.");
+        }
+    }
+
+    @Deprecated(forRemoval = true)
+    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission, int defaultRequiredLevel) {
+        if (source instanceof CommandSourceStack stack) {
+            return check(stack, permission, defaultRequiredLevel);
+        } else {
+            throw new IllegalArgumentException("Source '" + source + "' is not a CommandSourceStack.");
+        }
+    }
+
+    @Deprecated(forRemoval = true)
+    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission, @NotNull PermissionLevel defaultRequiredLevel) {
+        if (source instanceof CommandSourceStack stack) {
+            return check(stack, permission, defaultRequiredLevel);
+        } else {
+            throw new IllegalArgumentException("Source '" + source + "' is not a CommandSourceStack.");
+        }
+    }
+
+    @Deprecated(forRemoval = true)
+    static boolean check(@NotNull SharedSuggestionProvider source, @NotNull String permission) {
+        if (source instanceof CommandSourceStack stack) {
+            return check(stack, permission);
+        } else {
+            throw new IllegalArgumentException("Source '" + source + "' is not a CommandSourceStack.");
+        }
     }
     
 }

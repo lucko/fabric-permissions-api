@@ -26,7 +26,7 @@ Then depend on `"fabric-permissions-api-v0": "*"` in your fabric.mod.json.
 ### Version Matrix
 | Minecraft version | fabric-permission-api version |
 |-------------------|-------------------------------|
-| 26.1              | `0.7.0`                       |
+| 26.1 to 26.4              | `0.7.1`                       |
 | 1.21.11           | `0.6.1`                       |
 | 1.21.9 to 1.21.10 | `0.5.0`                       |
 | 1.21.6 to 1.21.8  | `0.4.0`                       |

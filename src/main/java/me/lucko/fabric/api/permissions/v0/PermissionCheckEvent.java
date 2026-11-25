@@ -28,11 +28,11 @@ package me.lucko.fabric.api.permissions.v0;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.CommandSourceStack;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Simple permissions check event for {@link SharedSuggestionProvider}s.
+ * Simple permissions check event for {@link CommandSourceStack}s.
  */
 public interface PermissionCheckEvent {
 
@@ -46,6 +46,6 @@ public interface PermissionCheckEvent {
         return TriState.DEFAULT;
     });
 
-    @NotNull TriState onPermissionCheck(@NotNull SharedSuggestionProvider source, @NotNull String permission);
+    @NotNull TriState onPermissionCheck(@NotNull CommandSourceStack source, @NotNull String permission);
 
 }

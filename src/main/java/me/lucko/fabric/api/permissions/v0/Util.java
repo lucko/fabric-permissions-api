@@ -25,12 +25,11 @@
 
 package me.lucko.fabric.api.permissions.v0;
 
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
 class Util {
@@ -48,7 +47,7 @@ class Util {
     }
 
     static PermissionLevel permissionLevelFromInt(int level) {
-        return PermissionLevel.byId(Mth.clamp(level, 0, PermissionLevel.OWNERS.id()));
+        return PermissionLevel.byId(Math.clamp(level, 0, PermissionLevel.OWNERS.id()));
     }
 
 }
