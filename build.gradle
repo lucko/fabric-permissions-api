@@ -1,3 +1,9 @@
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.MethodVisitor
+import org.objectweb.asm.Opcodes
+
 plugins {
     id 'net.fabricmc.fabric-loom' version '1.15-SNAPSHOT'
     id 'maven-publish'
@@ -40,6 +46,29 @@ java {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
     options.release = 25
+}
+
+tasks.named('jar', Jar) {
+    doLast {
+        def jarPath = archiveFile.get().asFile.toPath()
+        java.nio.file.FileSystems.newFileSystem(jarPath, (ClassLoader) null).withCloseable { fs ->
+            ['Permissions', 'Options'].each { name ->
+                def path = fs.getPath("me/lucko/fabric/api/permissions/v0/${name}.class")
+                def reader = new ClassReader(java.nio.file.Files.readAllBytes(path))
+                def writer = new ClassWriter(0)
+                reader.accept(new ClassVisitor(Opcodes.ASM9, writer) {
+                    @Override
+                    MethodVisitor visitMethod(int access, String methodName, String descriptor, String signature, String[] exceptions) {
+                        if (descriptor.contains('Lnet/minecraft/commands/SharedSuggestionProvider;')) {
+                            access |= Opcodes.ACC_SYNTHETIC
+                        }
+                        return super.visitMethod(access, methodName, descriptor, signature, exceptions)
+                    }
+                }, 0)
+                java.nio.file.Files.write(path, writer.toByteArray())
+            }
+        }
+    }
 }
 
 indra {
