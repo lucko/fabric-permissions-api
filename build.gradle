@@ -71,32 +71,6 @@ tasks.named('jar', Jar) {
     }
 }
 
-def abi261Jar = tasks.register('abi261Jar', Jar) {
-    archiveClassifier = '26.1-abi'
-    from sourceSets.main.output
-}
-
-def abiAttribute = Attribute.of('me.lucko.fabric-permissions-api.abi', String)
-
-def abi261ApiElements = configurations.register('26.1AbiApiElements') {
-    canBeConsumed = true
-    canBeResolved = false
-    attributes {
-        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_API))
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR))
-        attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
-        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
-        attribute(abiAttribute, '26.1')
-    }
-    outgoing.artifact(abi261Jar)
-}
-
-components.java.addVariantsFromConfiguration(abi261ApiElements.get()) {
-    mapToMavenScope('compile')
-    mapToOptional()
-}
-
 indra {
     github("lucko", "fabric-permissions-api") {
         ci(true)
